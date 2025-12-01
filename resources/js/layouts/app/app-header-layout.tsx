@@ -8,15 +8,19 @@ import type { PropsWithChildren } from 'react';
 export default function AppHeaderLayout({
     children,
     breadcrumbs,
-}: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[] }>) {
+    title,
+}: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[]; title?: string }>) {
     return (
         <AppShell>
             <AppHeader
                 breadcrumbs={breadcrumbs}
                 mainNavItems={mainNavItems}
                 rightNavItems={footerNavItems}
+                title={title}
             />
-            <AppContent>{children}</AppContent>
+            <AppContent>
+                {children}
+            </AppContent>
         </AppShell>
     );
 }

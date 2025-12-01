@@ -12,7 +12,8 @@ export default function AppSidebarLayout({
     children,
     breadcrumbs = [],
     className,
-}: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[]; className?: string }>) {
+    title,
+}: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[]; className?: string; title?: string }>) {
     return (
         <AppShell variant="sidebar">
             <AppSidebar
@@ -20,7 +21,7 @@ export default function AppSidebarLayout({
                 footerNavItems={footerNavItems}
             />
             <AppContent variant="sidebar" className={className}>
-                <AppSidebarHeader breadcrumbs={breadcrumbs} />
+                <AppSidebarHeader breadcrumbs={breadcrumbs} title={title} />
                 {children}
             </AppContent>
         </AppShell>

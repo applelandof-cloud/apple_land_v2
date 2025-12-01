@@ -1,7 +1,8 @@
 import { dashboard, inventory, products, places, sales, reports, staff } from '@/routes';
 import { type NavItem } from '@/types';
-import { Smartphone, LayoutGrid, Map, ShoppingCart, BarChart, Users, Boxes,
-    //  Folder, BookOpen 
+import {
+    Smartphone, LayoutGrid, Map, ShoppingCart, BarChart, Users, Boxes,
+    //  Folder, BookOpen
 } from 'lucide-react';
 
 export const mainNavItems: NavItem[] = [
@@ -21,7 +22,7 @@ export const mainNavItems: NavItem[] = [
         icon: Boxes,
     },
     {
-        title: 'Lugares',
+        title: 'Sucursales',
         href: places(),
         icon: Map,
     },

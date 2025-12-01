@@ -12,19 +12,60 @@ class ColorSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('color')->insert([
+        DB::table('colors')->truncate();
+        DB::table('colors')->insert([
             [
-                'name' => 'rojo',
+                'name' => 'Negro',
+                'hex_code' => '#000000'
+            ],
+            [
+                'name' => 'Blanco',
+                'hex_code' => '#FFFFFF'
+            ],
+            [
+                'name' => 'Plata',
+                'hex_code' => '#C0C0C0'
+            ],
+            [
+                'name' => 'Oro',
+                'hex_code' => '#FFD700'
+            ],
+            [
+                'name' => 'Gris Espacial',
+                'hex_code' => '#505050'
+            ],
+            [
+                'name' => 'Oro Rosa',
+                'hex_code' => '#B76E79'
+            ],
+            [
+                'name' => 'Verde Medianoche',
+                'hex_code' => '#3A4F4A'
+            ],
+            [
+                'name' => 'Azul Pacífico',
+                'hex_code' => '#36454F'
+            ],
+            [
+                'name' => 'Grafito',
+                'hex_code' => '#383838'
+            ],
+            [
+                'name' => 'Azul Sierra',
+                'hex_code' => '#6EB0E6'
+            ],
+            [
+                'name' => 'Verde Alpino',
+                'hex_code' => '#2C5F2D'
+            ],
+            [
+                'name' => 'Morado',
+                'hex_code' => '#800080'
+            ],
+            [
+                'name' => 'Rojo',
                 'hex_code' => '#FF0000'
             ],
-            [
-                'name' => 'amarillo',
-                'hex_code' => '#FFFF00'
-            ],
-            [
-                'name' => 'azul',
-                'hex_code' => '#0000FF'
-            ]
         ]);
     }
 }
