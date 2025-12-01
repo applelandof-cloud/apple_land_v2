@@ -1,13 +1,15 @@
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import React from 'react'; // Import React
 
 interface FloatingActionButtonProps {
     onClick: () => void;
     className?: string;
+    icon?: LucideIcon; // Add icon prop
 }
 
-export function FloatingActionButton({ onClick, className }: FloatingActionButtonProps) {
+export function FloatingActionButton({ onClick, className, icon: Icon = Plus }: FloatingActionButtonProps) {
     return (
         <Button
             onClick={onClick}
@@ -17,7 +19,7 @@ export function FloatingActionButton({ onClick, className }: FloatingActionButto
             )}
             size="icon"
         >
-            <Plus className="h-8 w-8" />
+            <Icon className="h-8 w-8" />
         </Button>
     );
 }

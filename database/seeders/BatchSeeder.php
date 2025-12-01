@@ -13,28 +13,28 @@ class BatchSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('batch')->insert([
+        DB::table('batches')->insert([
             [
+                'id'=> 1,
                 'product_id' => 1,
                 'entry_date' => now(),
                 'expiration_date' => Carbon::create(2025, 12, 07),
-                'unit_cost_batch' => 800, #moneda?
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
+                'id'=> 2,
                 'product_id' => 2,
                 'entry_date' => now(),
                 'expiration_date' => Carbon::create(2025, 12, 07),
-                'unit_cost_batch' => 1000, #moneda?
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
+                'id'=> 3,
                 'product_id' => 3,
                 'entry_date' => now(),
                 'expiration_date' => Carbon::create(2025, 12, 07),
-                'unit_cost_batch' => 1200, #moneda?
                 'created_at' => now(),
                 'updated_at' => now()
             ]

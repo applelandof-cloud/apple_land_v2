@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->date('entry_date');
             $table->date('expiration_date')->nullable();
-            $table->decimal('unit_cost_batch', 10, 2);
             $table->timestamps();
         });
     }

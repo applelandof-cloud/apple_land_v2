@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Color, Currency, Product, ProductType } from '@/types';
+import { Category, Color, Currency, Product, ProductType } from '@/types';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useEffect, useState } from 'react';
 import { ProductForm } from './ProductForm';
@@ -26,6 +26,7 @@ interface ProductListItemProps
   onSave: (product: Product | Partial<Product>) => void;
   onCancel: () => void;
   isInitiallyEditing?: boolean;
+  allCategories: Category[];
   allColors: Color[];
   allCurrencies: Currency[];
   allProductTypes: ProductType[];
@@ -40,6 +41,7 @@ export function ProductListItem({
   onSave,
   onCancel,
   isInitiallyEditing = false,
+  allCategories,
   allColors,
   allCurrencies,
   allProductTypes,
@@ -79,6 +81,7 @@ export function ProductListItem({
           product={product}
           onSave={handleSave}
           onCancel={handleCancel}
+          allCategories={allCategories}
           allColors={allColors}
           allCurrencies={allCurrencies}
           allProductTypes={allProductTypes}

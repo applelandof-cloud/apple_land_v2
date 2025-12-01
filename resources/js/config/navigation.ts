@@ -22,11 +22,6 @@ export const mainNavItems: NavItem[] = [
         icon: Boxes,
     },
     {
-        title: 'Sucursales',
-        href: places(),
-        icon: Map,
-    },
-    {
         title: 'Ventas',
         href: sales(),
         icon: ShoppingCart,

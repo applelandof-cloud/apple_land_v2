@@ -113,12 +113,12 @@ export function ColorManagerModal({ open, onClose }: ColorManagerModalProps) {
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle>Manage Colors</DialogTitle>
+          <DialogTitle>Colores</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="flex items-center gap-2 rounded-lg border p-2">
             <Input
-              placeholder="Color Name (e.g. Space Gray)"
+              placeholder="Nombre Color (e.g. Verde)"
               value={editingColor.name || ''}
               onChange={(e) =>
                 setEditingColor({ ...editingColor, name: e.target.value })
@@ -132,14 +132,14 @@ export function ColorManagerModal({ open, onClose }: ColorManagerModalProps) {
               }
             />
             <Button onClick={handleSave}>
-              {editingColor.id ? 'Update' : 'Add'}
+              {editingColor.id ? 'Actualizar' : 'Agregar'}
             </Button>
             {editingColor.id && (
               <Button
                 variant="ghost"
                 onClick={() => setEditingColor({ name: '', hex_code: '' })}
               >
-                Cancel
+                Cancelar
               </Button>
             )}
           </div>
@@ -182,7 +182,7 @@ export function ColorManagerModal({ open, onClose }: ColorManagerModalProps) {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={handleClose}>
-            Close
+            Cerrar
           </Button>
         </DialogFooter>
       </DialogContent>
