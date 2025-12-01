@@ -1,0 +1,258 @@
+@startuml
+!theme vibrant
+
+title Appleland Database Schema
+
+' Tables
+entity "makers" {
+  + id: int
+  --
+  name: varchar
+}
+
+entity "colors" {
+  + id: int
+  --
+  name: varchar
+  hex_code: varchar
+  timestamps
+}
+
+entity "types" {
+  + id: int
+  --
+  name: varchar
+}
+
+entity "models" {
+  + id: int
+  --
+  name: varchar
+  model_number: varchar
+  sku: varchar
+  image_url: varchar
+  has_sim: boolean
+  timestamps
+  --
+  # type_id: int
+}
+
+entity "color_model" {
+  --
+  # color_id: int
+  # model_id: int
+  timestamps
+}
+
+entity "categories" {
+  + id: int
+  --
+  name: varchar
+  timestamps
+}
+
+entity "products" {
+  + id: int
+  --
+  timestamps
+  --
+  # model_id: int
+}
+
+entity "batches" {
+  + id: int
+  --
+  entry_date: date
+  expiration_date: date
+  unit_cost_batch: decimal
+  timestamps
+  --
+  # product_id: int
+}
+
+entity "places" {
+  + id: int
+  --
+  name: varchar
+  address: varchar
+  is_active: boolean
+  timestamps
+}
+
+entity "users" {
+  + id: int
+  --
+  name: varchar
+  last_name: varchar
+  email: varchar
+  username: varchar
+  password: varchar
+  identification: varchar
+  phone_number: varchar
+  is_active: boolean
+  rememberToken
+  timestamps
+}
+
+entity "role" {
+  + id: int
+  --
+  name: varchar
+  timestamps
+  softDeletes
+}
+
+entity "permission" {
+  + id: int
+  --
+  name: varchar
+  timestamps
+  softDeletes
+}
+
+entity "user_role_permission" {
+  --
+  # user_id: int
+  # role_id: int
+  # permission_id: int
+  timestamps
+}
+
+entity "place_user" {
+  --
+  # place_id: int
+  # user_id: int
+}
+
+entity "stocks" {
+  + id: int
+  --
+  quantity: int
+  timestamps
+  --
+  # batch_id: int
+  # place_id: int
+}
+
+entity "statuses" {
+  + id: int
+  --
+  name: varchar
+  timestamps
+}
+
+entity "available_items" {
+  + id: int
+  --
+  imei: varchar
+  imei2: varchar
+  serial_number: varchar
+  color: varchar
+  is_gift: boolean
+  is_visible: boolean
+  storage: varchar
+  timestamps
+  --
+  # product_id: int
+  # status_id: int
+  # stock_id: int
+}
+
+entity "currency" {
+  + id: int
+  --
+  name: varchar
+  symbol: varchar
+}
+
+entity "payment_type" {
+  + id: int
+  --
+  name: varchar
+  type: varchar
+  commission: decimal
+  --
+  # currency_id: int
+}
+
+entity "sale" {
+  + id: int
+  --
+  sale_date: timestamp
+  total: decimal
+  timestamps
+  --
+  # user_id: int
+}
+
+entity "sale_payment" {
+  + id: int
+  --
+  amount: decimal
+  timestamps
+  --
+  # sale_id: int
+  # payment_type_id: int
+}
+
+entity "jobs" {
+  + id: bigint
+  --
+  queue: varchar
+  payload: longtext
+  attempts: tinyint
+  reserved_at: int
+  available_at: int
+  created_at: int
+}
+
+entity "bookings" {
+  + id: int
+  --
+  date_booking: datetime
+  advance_payment: decimal
+  currency: varchar
+  timestamps
+  --
+  # client_id: int
+  # user_id: int
+}
+
+entity "booking_product" {
+  + id: int
+  --
+  quantity: int
+  timestamps
+  --
+  # booking_id: int
+  # product_id: int
+  # available_id: int
+}
+
+' Relationships
+models }o--|| types
+color_model }o--|| colors
+color_model }o--|| models
+products }o--|| models
+batches }o--|| products
+user_role_permission }o--|| users
+user_role_permission }o--|| role
+user_role_permission }o--|| permission
+place_user }o--|| places
+place_user }o--|| users
+stocks }o--|| batches
+stocks }o--|| places
+available_items }o--|| products
+available_items }o--|| statuses
+available_items }o--|| stocks
+payment_type }o--|| currency
+sale }o--|| users
+sale_payment }o--|| sale
+sale_payment }o--|| payment_type
+bookings }o--|| users : "client_id"
+bookings }o--|| users : "user_id"
+booking_product }o--|| bookings
+booking_product }o--|| products
+booking_product }o--|| available_items
+
+@enduml

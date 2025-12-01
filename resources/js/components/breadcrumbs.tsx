@@ -27,11 +27,15 @@ export function Breadcrumbs({
                                     <BreadcrumbItem>
                                         {isLast ? (
                                             <BreadcrumbPage>
-                                                {item.title}
+                                                <div className="flex items-center">
+                                                    {item.icon && <item.icon className="mr-2 h-4 w-4" />}
+                                                    {item.title}
+                                                </div>
                                             </BreadcrumbPage>
                                         ) : (
                                             <BreadcrumbLink asChild>
-                                                <Link href={item.href}>
+                                                <Link href={item.href} className="flex items-center">
+                                                    {item.icon && <item.icon className="mr-2 h-4 w-4" />}
                                                     {item.title}
                                                 </Link>
                                             </BreadcrumbLink>

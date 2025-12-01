@@ -1,0 +1,22 @@
+@startuml
+
+    actor Vendedor /'Definir los usuarios que podran realizar los cambios'/
+    entity cambios
+    entity persona
+    entity stock
+    entity producto
+    entity historial
+
+    activate cambios
+    Vendedor -> cambios : Iniciar el cambio
+    cambios -> persona : Registrar persona/negocio \n con la que se negocia el cambio
+    persona --> cambios : ok
+    cambios -> stock : Crear Producto Ingresado
+    stock --> cambios : ok
+    cambios -> producto : Registrar la salida del Producto  \nProducto "CAMBIADO" /'Definir el estado del producto en un cambio'/
+    producto --> cambios : ok
+    cambios -> historial : Registrar usuario e ingreso/salida del producto
+    cambios --> Vendedor : Finalizar cambio
+    deactivate cambios
+
+@enduml

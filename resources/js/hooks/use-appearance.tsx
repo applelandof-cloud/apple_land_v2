@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 export type Appearance = 'light' | 'dark' | 'system';
+export type LayoutStyle = 'sidebar' | 'header';
 
 const prefersDark = () => {
     if (typeof window === 'undefined') {
@@ -52,6 +53,7 @@ export function initializeTheme() {
 
 export function useAppearance() {
     const [appearance, setAppearance] = useState<Appearance>('system');
+    const [layoutStyle, setLayoutStyle] = useState<LayoutStyle>('sidebar');
 
     const updateAppearance = useCallback((mode: Appearance) => {
         setAppearance(mode);
@@ -65,20 +67,35 @@ export function useAppearance() {
         applyTheme(mode);
     }, []);
 
+    const updateLayoutStyle = useCallback((style: LayoutStyle) => {
+        setLayoutStyle(style);
+
+        // Store in localStorage for client-side persistence...
+        localStorage.setItem('layoutStyle', style);
+
+        // Store in cookie for SSR...
+        setCookie('layoutStyle', style);
+    }, []);
+
     useEffect(() => {
         const savedAppearance = localStorage.getItem(
             'appearance',
         ) as Appearance | null;
+        const savedLayoutStyle = localStorage.getItem(
+            'layoutStyle',
+        ) as LayoutStyle | null;
 
         // eslint-disable-next-line react-hooks/set-state-in-effect
         updateAppearance(savedAppearance || 'system');
+         
+        updateLayoutStyle(savedLayoutStyle || 'sidebar');
 
         return () =>
             mediaQuery()?.removeEventListener(
                 'change',
                 handleSystemThemeChange,
             );
-    }, [updateAppearance]);
+    }, [updateAppearance, updateLayoutStyle]);
 
-    return { appearance, updateAppearance } as const;
+    return { appearance, updateAppearance, layoutStyle, updateLayoutStyle } as const;
 }

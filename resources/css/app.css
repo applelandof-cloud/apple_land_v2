@@ -62,6 +62,14 @@
 }
 
 :root {
+    --pastel-blue: oklch(0.9 0.05 230);
+    --pastel-green: oklch(0.9 0.05 145);
+    --pastel-purple: oklch(0.9 0.05 280);
+    --pastel-pink: oklch(0.9 0.05 340);
+    --pastel-yellow: oklch(0.9 0.05 90);
+    --pastel-orange: oklch(0.9 0.05 50);
+    --pastel-gray: oklch(0.9 0 0);
+
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
