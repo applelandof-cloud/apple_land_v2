@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "iPhone 16 Pro",
+    "image": "https://es.digitaltrends.com/wp-content/uploads/2023/09/iphohe-15-pro-iphone-15-pro-max-feat-01.jpeg?resize=1200%2C720&p=1",
+    "status": "Disponible",
+    "price": 999.99,
+    "price_bs": 6959.93,
+    "cost": 699.99,
+    "type": "Smartphone",
+    "model": "A2849",
+    "maker": "Apple"
+  },
+  {
+    "id": 2,
+    "name": "MacBook Air M3",
+    "image": "https://ipowerresale.com/cdn/shop/files/media_a2baf1ec-7b5b-4a75-a188-71b4f0ae3cf7.png?v=1760570508",
+    "status": "Agotado",
+    "price": 1099.00,
+    "price_bs": 7645.04,
+    "cost": 899.00,
+    "type": "Laptop",
+    "model": "A3113",
+    "maker": "Apple"
+  },
+  {
+    "id": 3,
+    "name": "iPad Pro",
+    "image": "https://crdms.images.consumerreports.org/prod/products/cr/models/408314-9-inch-screen-and-larger-tablets-apple-ipad-pro-12-9-128gb-2022-10033150.png",
+    "status": "Disponible",
+    "price": 1299.00,
+    "price_bs": 9039.24,
+    "cost": 999.00,
+    "type": "Tablet",
+    "model": "A2837",
+    "maker": "Apple"
+  },
+  {
+    "id": 4,
+    "name": "Apple Watch Ultra 2",
+    "image": "https://www.machines.com.my/cdn/shop/files/Apple_Watch_Ultra_2_49mm_Black_Titanium_Ocean_Band_Black_PDP_Image_Position_1__GBEN_ce4a0a46-7cdb-486b-bf57-a483554e7626.jpg?v=1726228853&width=1445",
+    "status": "Disponible",
+    "price": 799.00,
+    "price_bs": 5559.04,
+    "cost": 599.00,
+    "type": "Smartwatch",
+    "model": "A2986",
+    "maker": "Apple"
+  },
+  {
+    "id": 5,
+    "name": "AirPods Pro (2nd generation)",
+    "image": "https://m.media-amazon.com/images/I/51NRGHU2NoL._AC_UF894,1000_QL80_.jpg",
+    "status": "Disponible",
+    "price": 249.00,
+    "price_bs": 1732.04,
+    "cost": 199.00,
+    "type": "Earbuds",
+    "model": "A2931",
+    "maker": "Apple"
+  },
+  {
+    "id": 6,
+    "name": "Apple Vision Pro",
+    "image": "https://www.justelectric.co.za/cdn/shop/files/Screenshot_2024-09-30_133530.png?v=1727696185",
+    "status": "Disponible",
+    "price": 3499.00,
+    "price_bs": 24344.04,
+    "cost": 2999.00,
+    "type": "Headset",
+    "model": "A2117",
+    "maker": "Apple"
+  }
+]
