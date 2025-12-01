@@ -1,0 +1,100 @@
+@startuml
+
+    actor Propietario /'Notificar a encargado?'/
+    actor Cliente
+    actor Vendedor
+    entity cliente
+    entity reserva
+    entity reserva_detalle
+    entity venta
+    entity caja
+    entity producto
+    entity stock
+    entity job
+
+    ==Reserva==
+    Cliente --> Vendedor : Solicita Reserva
+
+    activate Vendedor
+    Vendedor -> cliente : Registrar Cliente
+    cliente --> Vendedor : ok
+    Vendedor -> reserva : Crear Reserva \nReserva "ACTIVA"
+
+    activate reserva
+    reserva --> cliente : Asociar Cliente
+    cliente --> reserva : ok
+    reserva -> reserva_detalle : Agregar productos a reservar
+
+    activate reserva_detalle
+    reserva_detalle -> producto : Cambiar estado del producto(s) \nProducto/s "RESERVADO"
+    producto --> reserva_detalle : ok
+    reserva_detalle --> reserva : ok
+    deactivate reserva_detalle
+
+    reserva -> caja : Registrar anticipo de la reserva
+    caja --> reserva : ok
+    reserva --> Vendedor : Finalizar Proceso
+    deactivate reserva
+    deactivate Vendedor
+
+    ==Venta==
+    Cliente -> Vendedor : Confirma la Venta
+
+    activate Vendedor
+    Vendedor -> reserva : Busca Reserva
+
+    activate reserva
+    reserva -> venta : Convertir Reserva en Venta
+
+    activate venta
+    venta -> producto : Cambiar estado a "VENDIDO"
+    venta -> stock : Actualizar stock
+    venta -> caja : Registrar saldo y anticipo
+
+    activate caja
+    caja -> venta : ok
+    deactivate caja
+
+    venta --> reserva : Venta "COMPLETADA"
+    deactivate venta
+
+    reserva -> Vendedor : Reserva "COMPLETADA"
+    deactivate reserva
+    deactivate Vendedor
+
+    == Cancelar Reserva ==
+    Cliente --> Vendedor : Cancela Reserva
+
+    activate Vendedor
+    Vendedor -> reserva : Cancelar Reserva \nReserva "CANCELADA"
+
+    activate reserva
+    reserva -> reserva_detalle : Actualizar detalle
+
+    activate reserva_detalle
+    reserva_detalle -> producto : Actualizar producto/s \nProducto "DISPONIBLE"
+    reserva_detalle --> reserva : ok
+    deactivate reserva_detalle
+
+    reserva -> caja : Registrar Salida de caja \nDevolucion anticipo
+    reserva --> Vendedor : Finalizar Reserva
+    deactivate reserva
+
+    Vendedor --> Cliente : Devolver anticipo
+    deactivate Vendedor
+
+    ==Reserva Expirada==
+    activate job
+    job --> reserva : Control fecha de vencimiento \nReserva "VENCIDA"
+    activate reserva
+    reserva -> reserva_detalle : Actualizar detalle
+    activate reserva_detalle
+    reserva_detalle -> producto : Actualizar producto/s \nProducto "DISPONIBLE"
+    reserva_detalle --> reserva : ok
+    deactivate reserva_detalle
+
+    reserva -> Propietario : Notificar reservas vencidas
+    deactivate reserva
+    deactivate job
+
+@enduml

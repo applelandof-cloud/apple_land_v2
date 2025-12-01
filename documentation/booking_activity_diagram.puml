@@ -1,0 +1,35 @@
+@startuml
+
+start
+
+:Crear nueva Reserva "ACTIVA";
+/'Considerar Registrar el nombre del vendedor en caso de que el Cliente no deje sus datos?'/
+:Registrar Cliente;
+:Registrar Pago de Reserva;
+
+if (Existe Producto?) then (no)
+    :Registrar Producto;
+endif
+
+:Marcar Producto como "RESERVADO";
+
+if (Cliente recoge el Producto?) then (yes)
+    :Buscar Reserva;
+    :Convertir Reserva en Venta;
+    :Actualizar Reserva a "COMPLETADA";
+    :Mover pago anticipado a la Venta;
+    :Registrar el saldo pendiente;
+    :Actualizar el Producto(s) como "NO DISPONIBLE";
+    :Cerrar Venta;
+else (no)
+    if (Expiro la reserva?) then (yes)
+        :Actualizar Reserva a "VENCIDA";
+        :Actualizar Producto a "DISPONIBLE";
+    else (no)
+        :Mantener Reserva como "ACTIVA" hasta la fecha de vencimiento;
+    endif
+endif
+
+stop
+
+@enduml
