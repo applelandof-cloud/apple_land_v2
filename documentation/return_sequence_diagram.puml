@@ -1,0 +1,33 @@
+@startuml
+
+    actor Cliente
+    actor Vendedor
+    entity venta
+    entity venta_detalle
+    entity caja
+    entity stock
+    entity producto
+
+    Cliente --> Vendedor : Solicita devolucion
+    Vendedor -> venta : Cancelar venta
+
+    activate venta
+    venta -> venta_detalle : Solicitar Producto(s)
+
+    activate venta_detalle
+    venta_detalle -> stock: Actualizar stock con retorno de productos
+    venta_detalle -> producto: Actualizar Producto(s) \nProducto "RETORNADO"
+    venta_detalle --> venta : ok
+    deactivate venta_detalle
+
+    venta -> caja : Registrar salida de caja \nPor DEVOLUCION
+
+    activate caja
+    caja --> venta : ok
+    deactivate caja
+
+    venta -> venta : Anular Venta \nVenta "CANCELADA"
+    venta --> Vendedor : ok
+    deactivate venta
+
+@enduml

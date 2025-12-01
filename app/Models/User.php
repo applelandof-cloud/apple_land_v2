@@ -3,15 +3,16 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -20,8 +21,13 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'last_name',
+        'username',
         'email',
         'password',
+        'identification',
+        'phone_number',
+        'is_active',
     ];
 
     /**
@@ -31,8 +37,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'two_factor_secret',
-        'two_factor_recovery_codes',
         'remember_token',
     ];
 
@@ -44,9 +48,29 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'is_active' => 'boolean',
             'password' => 'hashed',
-            'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The roles that belong to the user.
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(
+          Role::class,
+            'user_role',
+            'user_id',
+            'role_id')->withTimestamps();
+    }
+
+    public function places()
+    {
+        return $this->belongsToMany(
+            Place::class,
+              'place_user',
+    'user_id',
+    'place_id')->withTimestamps();
     }
 }
