@@ -11,13 +11,13 @@ class Place extends Model
         'address',
     ];
 
-    // 🔗 Relationship: a place can have many users
+    // Relationship: a place can have many users
     public function users()
     {
         return $this->belongsToMany(
             User::class,
-            'place_user',
-  'place_id',
-  'user_id')->withTimestamps();
+              'place_user',
+    'place_id',
+    'user_id')->withoutTimestamps();
     }
 }

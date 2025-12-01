@@ -7,6 +7,7 @@ import { footerNavItems, mainNavItems } from '@/config/navigation';
 // import { useAppearance } from '@/hooks/use-appearance';
 import { type BreadcrumbItem } from '@/types';
 import { type PropsWithChildren } from 'react';
+import { Toaster } from '@/components/ui/toaster';
 
 export default function AppSidebarLayout({
     children,
@@ -24,6 +25,7 @@ export default function AppSidebarLayout({
                 <AppSidebarHeader breadcrumbs={breadcrumbs} title={title} />
                 {children}
             </AppContent>
+            <Toaster />
         </AppShell>
     );
 }

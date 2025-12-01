@@ -21,7 +21,6 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
 
     const handleLogout = () => {
         cleanup();
-        router.flushAll();
     };
 
     return (

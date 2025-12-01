@@ -1,9 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { ValidationModal } from '@/components/ValidationModal';
-import { Color, Currency, Product, ProductType } from '@/types';
+import { Category, Color, Currency, Product, ProductType } from '@/types';
 import { Check, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ProductColorSelection } from './ProductColorSelection';
+import { ProductCategorySelection } from './ProductCategorySelection';
 import { ProductDetailsForm } from './ProductDetailsForm';
 import { ProductImageUpload } from './ProductImageUpload';
 import { ProductPriceInputs } from './ProductPriceInputs';
@@ -12,6 +13,7 @@ interface ProductFormProps {
   product: Product | Partial<Product>;
   onSave: (product: Product | Partial<Product>) => void;
   onCancel: () => void;
+  allCategories: Category[],
   allColors: Color[];
   allCurrencies: Currency[];
   allProductTypes: ProductType[];
@@ -23,6 +25,7 @@ export function ProductForm({
   product,
   onSave,
   onCancel,
+  allCategories: initialAllCategories,
   allColors: initialAllColors,
   allCurrencies,
   allProductTypes,
@@ -32,6 +35,7 @@ export function ProductForm({
   const [editedProduct, setEditedProduct] = useState(product);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
+  const [allCategories, setAllCategories] = useState(initialAllCategories);
   const [allColors, setAllColors] = useState(initialAllColors);
   const [isValidationModalOpen, setIsValidationModalOpen] = useState(false);
   const [validationMessage, setValidationMessage] = useState('');
@@ -40,6 +44,10 @@ export function ProductForm({
   useEffect(() => {
     setEditedProduct(product);
   }, [product]);
+
+  useEffect(() => {
+    setAllCategories(initialAllCategories);
+  }, [initialAllCategories]);
 
   useEffect(() => {
     setAllColors(initialAllColors);
@@ -195,6 +203,12 @@ export function ProductForm({
         </div>
 
         <div className="flex flex-col gap-4 lg:col-span-4">
+          <ProductCategorySelection
+            editedProduct={editedProduct}
+            setEditedProduct={setEditedProduct}
+            allCategories={allCategories}
+            setAllCategories={setAllCategories}
+          />
           <ProductColorSelection
             editedProduct={editedProduct}
             setEditedProduct={setEditedProduct}

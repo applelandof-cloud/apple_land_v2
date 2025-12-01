@@ -2,9 +2,10 @@ import { ProductListItem } from '@/components/product/ProductListItem';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
-import { FloatingDeleteButton } from '@/components/ui/floating-delete-button'; // Import FloatingDeleteButton
+import { FloatingDeleteButton } from '@/components/ui/floating-delete-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 import {
   Popover,
   PopoverContent,
@@ -12,6 +13,7 @@ import {
 } from '@/components/ui/popover';
 import Layout from '@/layouts/app-layout';
 import {
+  Category,
   Color,
   Currency,
   PriceProduct,
@@ -31,6 +33,7 @@ export default function ProductsPage() {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
   const [priceTypes, setPriceTypes] = useState<PriceType[]>([]);
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [loading, setLoading] = useState(true);
   const [openAdvancedSearch, setOpenAdvancedSearch] = useState(false);
@@ -58,20 +61,24 @@ export default function ProductsPage() {
           currenciesResponse,
           productTypesResponse,
           priceTypesResponse,
+          categoriesResponse,
         ] = await Promise.all([
           fetch('/api/colors'),
           fetch('/api/currencies'),
           fetch('/api/product-types'),
           fetch('/api/price-types'),
+          fetch('/api/categories'),
         ]);
         const colorsData = await colorsResponse.json();
         const currenciesData = await currenciesResponse.json();
         const productTypesData = await productTypesResponse.json();
         const priceTypesData = await priceTypesResponse.json();
+        const categoriesData = await categoriesResponse.json();
         setColors(colorsData);
         setCurrencies(currenciesData);
         setProductTypes(productTypesData);
         setPriceTypes(priceTypesData);
+        setAllCategories(categoriesData.categories);
       } catch (error) {
         console.error('Error fetching static data:', error);
       }
@@ -219,6 +226,7 @@ export default function ProductsPage() {
       tech_accessory: { model_number: '', size: '', description: '' },
       prices: prices,
       colors: [],
+      categories: [],
       makers: [],
       images: [],
     };
@@ -323,7 +331,9 @@ export default function ProductsPage() {
         </div>
 
         {loading ? (
-          <p>Cargando productos...</p>
+            <div className="flex justify-center items-center h-[calc(100vh-180px)] w-full">
+                <Spinner />
+            </div>
         ) : (
           <div
             className={
@@ -338,6 +348,7 @@ export default function ProductsPage() {
                 isInitiallyEditing={true}
                 onSave={handleCreateProduct}
                 onCancel={() => setIsAdding(false)}
+                allCategories={allCategories}
                 allColors={colors}
                 allCurrencies={currencies}
                 allProductTypes={productTypes}
@@ -351,6 +362,7 @@ export default function ProductsPage() {
                 viewMode={viewMode}
                 onSave={handleUpdateProduct}
                 onCancel={() => {}}
+                allCategories={allCategories}
                 allColors={colors}
                 allCurrencies={currencies}
                 allProductTypes={productTypes}

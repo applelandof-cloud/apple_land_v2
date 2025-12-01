@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Models\PriceProduct;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -20,6 +19,7 @@ class ProductController extends Controller
             'productType',
             'prices.currency',
             'prices.priceType',
+            'categories',
             'colors',
             'makers',
             'images',
@@ -72,6 +72,11 @@ class ProductController extends Controller
             $product->colors()->sync($colorIds);
         }
 
+        if ($request->has('categories')) {
+            $categoriesIds = collect($request->input('categories'))->pluck('id');
+            $product->categories()->sync($categoriesIds);
+        }
+
         if ($request->has('prices')) {
             foreach ($request->input('prices') as $priceData) {
                 $product->prices()->create([
@@ -88,6 +93,7 @@ class ProductController extends Controller
             'productType',
             'prices.currency',
             'prices.priceType',
+            'categories',
             'colors',
             'makers',
             'images',
@@ -134,6 +140,11 @@ class ProductController extends Controller
             $product->colors()->sync($colorIds);
         }
 
+        if ($request->has('categories')) {
+            $categoriesIds = collect($request->input('categories'))->pluck('id');
+            $product->categories()->sync($categoriesIds);
+        }
+
         if ($request->has('prices')) {
             foreach ($request->input('prices') as $priceData) {
                 $priceTypeId = data_get($priceData, 'price_type_id');
@@ -169,6 +180,7 @@ class ProductController extends Controller
             'productType',
             'prices.currency',
             'prices.priceType',
+            'categories',
             'colors',
             'makers',
             'images',
@@ -191,5 +203,10 @@ class ProductController extends Controller
         Product::whereIn('id', $request->input('ids'))->update(['is_active' => false]);
 
         return response()->json(['message' => 'Products soft deleted successfully.']);
+    }
+
+    public function showDeviceModel(Product $product)
+    {
+        return response()->json($product->deviceModel);
     }
 }

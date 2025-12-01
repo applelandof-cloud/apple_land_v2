@@ -15,7 +15,7 @@ class InventoriesSeeder extends Seeder
     {
         DB::table('inventories')->insert([
             [
-                'id' => 1,                
+                'id' => 1,
                 'product_id' => 1,
                 'batch_id' => 1,
                 'place_id' => 1,

@@ -4,6 +4,7 @@ import { AppShell } from '@/components/app-shell';
 import { footerNavItems, mainNavItems } from '@/config/navigation';
 import { type BreadcrumbItem } from '@/types';
 import type { PropsWithChildren } from 'react';
+import { Toaster } from '@/components/ui/toaster';
 
 export default function AppHeaderLayout({
     children,
@@ -21,6 +22,7 @@ export default function AppHeaderLayout({
             <AppContent>
                 {children}
             </AppContent>
+            <Toaster />
         </AppShell>
     );
 }

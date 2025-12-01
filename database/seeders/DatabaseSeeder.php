@@ -36,6 +36,21 @@ class DatabaseSeeder extends Seeder
             MakerProductSeeder::class,
             ImageSeeder::class,
             ImageProductSeeder::class,
+            ConditionsSeeder::class,
+            StatusesSeeder::class,
+            DevicesSeeder::class,
+            BatchSeeder::class,
+            InventoriesSeeder::class,
+            ExchangeRateSeeder::class,
+            ExchangeRateItemSeeder::class,
+            PriceBatchSeeder::class,
+            StockSeeder::class,
+            PriceStockSeeder::class,
+            ConditionStockSeeder::class,
+            DeviceStockSeeder::class,
+            CategorySeeder::class,
+            CategoryProductSeeder::class,
+            CategoryStockSeeder::class,
         ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');

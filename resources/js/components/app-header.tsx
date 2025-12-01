@@ -144,11 +144,10 @@ export function AppHeader({
               {getTranslatedRouteTitle(page.url)}
             </h1>
           </div>
-
           <Link
             href={dashboard()}
             prefetch
-            className="flex h-full flex-shrink-0 items-center space-x-2 md:flex"
+            className="hidden md:flex h-full flex-shrink-0 items-center space-x-2 "
           >
             <AppLogo />
           </Link>
