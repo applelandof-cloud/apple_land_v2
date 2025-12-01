@@ -37,6 +37,41 @@ Commit both the updated `.puml` and `.png` files.
 4) `npm run build`
 5) `composer run dev`
 
+
+## Database
+The migration feature was used to define the database tables. You can find these in the database directory.
+There is also an .excalidraw file included — you can open it on Excalidraw https://excalidraw.com/
+by uploading the .excalidraw extension.
+
+You can create a new database and apply migration with following command:
+
+`php artisan migrate`
+
+This command take the database name from  `DB_DATABASE=my_database` set in `.env` file. If the database `my_database` does not exist in phpMyAdmin, the command will create it along with all tables.
+
+To populate the tables with initial data, you can run the seeders using:
+
+`php artisan db:seed`
+
+This command executes the `DatabaseSeeder` class located in the `database/seeders` directory.
+The `run()` method in this class calls all the individual seeder classes defined there.
+
+If there is a problem, rollback is available for laravel migration.
+
+`php artisan migrate:rollback`
+
+If there is a problem with seeders, is not possible rollback data, instead refresh or reset the entire database.
+If you’re just testing or developing, the easiest way is to drop all tables and re-run migrations and seeders:
+
+`php artisan migrate:fresh --seed`
+
+This:
+
+1. Drops all tables.
+2. Runs all migrations from scratch.
+3. Reseeds the database using DatabaseSeeder.
+
+
 ## setup sail (docker environment)
 https://laravel.com/docs/12.x/sail
 

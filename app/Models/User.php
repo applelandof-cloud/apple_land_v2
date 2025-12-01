@@ -3,7 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -12,7 +14,10 @@ class User extends Authenticatable
      *
      * @var string
      */
-    protected $table = 'users';
+    protected $table = 'user';
+
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -27,7 +32,6 @@ class User extends Authenticatable
         'password',
         'identification',
         'phone_number',
-        'is_active',
     ];
 
     /**
@@ -48,29 +52,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
             'password' => 'hashed',
         ];
-    }
-
-    /**
-     * The roles that belong to the user.
-     */
-    public function roles()
-    {
-        return $this->belongsToMany(
-          Role::class,
-            'user_role',
-            'user_id',
-            'role_id')->withTimestamps();
-    }
-
-    public function places()
-    {
-        return $this->belongsToMany(
-            Place::class,
-              'place_user',
-    'user_id',
-    'place_id')->withTimestamps();
     }
 }

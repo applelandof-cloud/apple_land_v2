@@ -21,6 +21,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
 
     const handleLogout = () => {
         cleanup();
+        router.flushAll();
     };
 
     return (
@@ -51,7 +52,6 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                     className="block w-full"
                     href={logout()}
                     as="button"
-                    method="post"
                     onClick={handleLogout}
                     data-test="logout-button"
                 >

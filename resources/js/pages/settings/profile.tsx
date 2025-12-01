@@ -4,6 +4,7 @@ import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
 import { Form, Head, Link, usePage } from '@inertiajs/react';
 
+import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -36,8 +37,8 @@ export default function Profile({
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
-                        title="Informacion de Perfil"
-                        description="Actualiza tus datos personales"
+                        title="Profile information"
+                        description="Update your name and email address"
                     />
 
                     <Form
@@ -50,7 +51,7 @@ export default function Profile({
                         {({ processing, recentlySuccessful, errors }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name">Nombre</Label>
+                                    <Label htmlFor="name">Name</Label>
 
                                     <Input
                                         id="name"
@@ -59,6 +60,7 @@ export default function Profile({
                                         name="name"
                                         required
                                         autoComplete="name"
+                                        placeholder="Full name"
                                     />
 
                                     <InputError
@@ -68,76 +70,22 @@ export default function Profile({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name">Apellidos</Label>
-
-                                    <Input
-                                        id="last_name"
-                                        className="mt-1 block w-full"
-                                        defaultValue={auth.user.last_name}
-                                        name="last_name"
-                                        required
-                                        autoComplete="last_name"
-                                    />
-
-                                    <InputError
-                                        className="mt-2"
-                                        message={errors.name}
-                                    />
-                                </div>
-
-                                <div className="grid gap-2">
-                                    <Label htmlFor="name">Email</Label>
+                                    <Label htmlFor="email">Email address</Label>
 
                                     <Input
                                         id="email"
+                                        type="email"
                                         className="mt-1 block w-full"
                                         defaultValue={auth.user.email}
                                         name="email"
                                         required
-                                        autoComplete="email"
+                                        autoComplete="username"
+                                        placeholder="Email address"
                                     />
 
                                     <InputError
                                         className="mt-2"
                                         message={errors.email}
-                                    />
-                                </div>
-
-                                <div className="grid gap-2">
-                                    <Label htmlFor="identification">
-                                        C.I.
-                                    </Label>
-
-                                    <Input
-                                        id="identification"
-                                        className="mt-1 block w-full"
-                                        defaultValue={auth.user.identification}
-                                        name="identification"
-                                        autoComplete="identification"
-                                    />
-
-                                    <InputError
-                                        className="mt-2"
-                                        message={errors.identification}
-                                    />
-                                </div>
-
-                                <div className="grid gap-2">
-                                    <Label htmlFor="phone_number">
-                                        Phone number
-                                    </Label>
-
-                                    <Input
-                                        id="phone_number"
-                                        className="mt-1 block w-full"
-                                        defaultValue={auth.user.phone_number}
-                                        name="phone_number"
-                                        autoComplete="tel"
-                                    />
-
-                                    <InputError
-                                        className="mt-2"
-                                        message={errors.phone_number}
                                     />
                                 </div>
 
@@ -159,12 +107,12 @@ export default function Profile({
 
                                             {status ===
                                                 'verification-link-sent' && (
-                                                    <div className="mt-2 text-sm font-medium text-green-600">
-                                                        A new verification link has
-                                                        been sent to your email
-                                                        address.
-                                                    </div>
-                                                )}
+                                                <div className="mt-2 text-sm font-medium text-green-600">
+                                                    A new verification link has
+                                                    been sent to your email
+                                                    address.
+                                                </div>
+                                            )}
                                         </div>
                                     )}
 
@@ -173,7 +121,7 @@ export default function Profile({
                                         disabled={processing}
                                         data-test="update-profile-button"
                                     >
-                                        Guardar
+                                        Save
                                     </Button>
 
                                     <Transition
@@ -184,7 +132,7 @@ export default function Profile({
                                         leaveTo="opacity-0"
                                     >
                                         <p className="text-sm text-neutral-600">
-                                            Guardado
+                                            Saved
                                         </p>
                                     </Transition>
                                 </div>
@@ -193,6 +141,7 @@ export default function Profile({
                     </Form>
                 </div>
 
+                <DeleteUser />
             </SettingsLayout>
         </AppLayout>
     );

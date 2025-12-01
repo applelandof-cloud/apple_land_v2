@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 
 class DatabaseSeeder extends Seeder
@@ -13,46 +13,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-
         $this->call([
-            PlacesSeeder::class,
-            UsersSeeder::class,
-            RolesSeeder::class,
-            PermissionsSeeder::class,
-            UserRoleSeeder::class,
-            RolePermissionSeeder::class,
-            PlaceUserSeeder::class,
             MakerSeeder::class,
             ColorSeeder::class,
-            ProductsSeeder::class,
-            ProductTypesSeeder::class,
-            DeviceModelsSeeder::class,
-            CurrenciesSeeder::class,
-            PriceTypesSeeder::class,
-            PricesSeeder::class,
-            PriceProductSeeder::class,
-            ColorProductSeeder::class,
-            MakerProductSeeder::class,
-            ImageSeeder::class,
-            ImageProductSeeder::class,
-            ConditionsSeeder::class,
-            StatusesSeeder::class,
-            DevicesSeeder::class,
-            BatchSeeder::class,
-            InventoriesSeeder::class,
-            ExchangeRateSeeder::class,
-            ExchangeRateItemSeeder::class,
-            PriceBatchSeeder::class,
-            StockSeeder::class,
-            PriceStockSeeder::class,
-            ConditionStockSeeder::class,
-            DeviceStockSeeder::class,
-            CategorySeeder::class,
-            CategoryProductSeeder::class,
-            CategoryStockSeeder::class,
+            TypeSeeder::class,
+            ModelSeeder::class,
+            UserSeeder::class,
+            RoleSeeder::class,
+            PermissionSeeder::class,
+            UserRolePermissionSeeder::class
         ]);
-
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

@@ -34,4 +34,6 @@ class UserFactory extends Factory
             'is_active' => true,
         ];
     }
+
+
 }

@@ -12,15 +12,12 @@ class MakerSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('makers')->truncate();
-        DB::table('makers')->insert([
+        DB::table('maker')->insert([
             [
-                'name' => 'APPLE',
-                'origin' => 'USA'
+                'name' => 'APPLE'
             ],
             [
-                'name' => 'SAMSUNG',
-                'origin' => 'South Korea'
+                'name' => 'SAMSUNG'
             ]
         ]);
     }
