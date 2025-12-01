@@ -34,6 +34,6 @@ class UserRoleSeeder extends Seeder
             ]);
         }
 
-        $this->command->info('UserRoleSeeder: Roles assigned to user');
+        $this->command->info('UserRoleSeeder: Roles assigned to user "juan".');
     }
 }

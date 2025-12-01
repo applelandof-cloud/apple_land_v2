@@ -31,8 +31,8 @@ export default function Password() {
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
-                        title="Update password"
-                        description="Ensure your account is using a long, random password to stay secure"
+                        title="Actualizar Password"
+                        description="Asegúrate de que tu cuenta utilice un password largo y aleatorio para mantenerla segura."
                     />
 
                     <Form
@@ -61,7 +61,7 @@ export default function Password() {
                             <>
                                 <div className="grid gap-2">
                                     <Label htmlFor="current_password">
-                                        Current password
+                                        Password Actual
                                     </Label>
 
                                     <Input
@@ -71,7 +71,6 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="current-password"
-                                        placeholder="Current password"
                                     />
 
                                     <InputError
@@ -81,7 +80,7 @@ export default function Password() {
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password">
-                                        New password
+                                        Nueva Password
                                     </Label>
 
                                     <Input
@@ -91,7 +90,6 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="New password"
                                     />
 
                                     <InputError message={errors.password} />
@@ -99,7 +97,7 @@ export default function Password() {
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password_confirmation">
-                                        Confirm password
+                                        Confirmar Password
                                     </Label>
 
                                     <Input
@@ -108,7 +106,6 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="Confirm password"
                                     />
 
                                     <InputError
@@ -121,7 +118,7 @@ export default function Password() {
                                         disabled={processing}
                                         data-test="update-password-button"
                                     >
-                                        Save password
+                                        Guardar Password
                                     </Button>
 
                                     <Transition
@@ -132,7 +129,7 @@ export default function Password() {
                                         leaveTo="opacity-0"
                                     >
                                         <p className="text-sm text-neutral-600">
-                                            Saved
+                                            Guardado
                                         </p>
                                     </Transition>
                                 </div>

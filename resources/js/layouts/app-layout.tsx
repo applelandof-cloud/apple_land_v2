@@ -8,12 +8,14 @@ interface AppLayoutProps {
     children: ReactNode;
     breadcrumbs?: BreadcrumbItem[];
     className?: string;
+    title?: string;
 }
 
 export default ({
     children,
     breadcrumbs,
     className,
+    title,
     ...props
 }: AppLayoutProps) => {
     const { layoutStyle } = useAppearance();
@@ -23,12 +25,14 @@ export default ({
             breadcrumbs={breadcrumbs}
             className={className}
             children={children}
+            title={title}
             {...props}
         />
     ) : (
         <AppHeaderLayout
             breadcrumbs={breadcrumbs}
             children={children}
+            title={title}
             {...props}
         />
     );

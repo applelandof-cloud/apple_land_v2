@@ -6,7 +6,7 @@ export default function AppLogo() {
             <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
                 <img src={logo} alt="Apple Land Logo" className="size-5" />
             </div>
-            <div className="ml-1 grid flex-shrink-0 text-left text-xs lg:text-sm">
+            <div className="hidden md:flex lg:space-x-2 ml-1 grid flex-shrink-0 text-left text-xs lg:text-sm">
                 <span className="whitespace-nowrap leading-tight font-semibold">
                     Apple Land
                 </span>

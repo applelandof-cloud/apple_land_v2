@@ -90,3 +90,17 @@ xdebug.client_host=127.0.0.1
 
 4) run `php artisan serve` and run debug left panel "Xdebug Local"
 
+
+## Clear commands
+php artisan cache:clear
+php artisan config:clear
+php artisan event:clear
+php artisan optimize:clear
+php artisan queue:clear
+php artisan route:cache
+php artisan route:clear
+php artisan view:clear
+
+## Run db migrations, seeds, clear commands, and run development at once.
+`composer clear:dev`
+`composer db:seed:clear:dev`

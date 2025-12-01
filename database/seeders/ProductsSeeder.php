@@ -29,7 +29,7 @@ class ProductsSeeder extends Seeder
             [
                 'id' => 3,
                 'name' => 'Samsung S24',
-                'is_active' => true,
+                'is_active' => false,
                 'product_type_id' => 1,
              
             ],

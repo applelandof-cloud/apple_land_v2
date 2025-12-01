@@ -16,5 +16,32 @@
                 "/var/www/html": "${workspaceFolder}"
             }
         },
+        {
+            "name": "Crome Debug",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:8000",
+            "webRoot": "${workspaceFolder}/resources/js",
+            "sourceMaps": true,
+            "tasks": [
+                {
+                    "label": "start-dev-server",
+                    "type": "shell",
+                    "command": "composer run db:seed:clear:dev",
+                    "isBackground": true,
+                    "problemMatcher": {
+                        "owner": "custom",
+                        "pattern": {
+                            "regexp": ".*"
+                        },
+                        "background": {
+                            "activeOnStart": true,
+                            "beginsPattern": ".*Starting Laravel development server.*",
+                            "endsPattern": ".*Vite server running.*"
+                        }
+                    }
+                }
+            ]
+        }
     ]
 }
