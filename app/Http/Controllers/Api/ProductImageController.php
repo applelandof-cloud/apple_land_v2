@@ -34,7 +34,7 @@ class ProductImageController extends Controller
     {
         // Get the path from the URL (e.g., /storage/products/image.jpg -> products/image.jpg)
         $path = ltrim(parse_url($image->url, PHP_URL_PATH), '/storage/');
-        
+
         Storage::disk('public')->delete($path);
 
         $image->delete();

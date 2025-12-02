@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Product } from '@/types';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -38,9 +39,10 @@ export function ProductListView({
     name,
     device_model,
     tech_accessory,
+    maker, // Changed from makers
     prices,
+    categories,
     colors,
-    makers,
     images,
     product_type,
   } = product;
@@ -73,7 +75,7 @@ export function ProductListView({
         <div className="md:col-span-4">
           <h3 className="text-lg font-bold">{name}</h3>
           <p className="text-sm text-muted-foreground">
-            {makers?.map((m) => m.name).join(', ')} - {product_type?.name}
+            {maker?.name ? `${maker.name} (${maker.origin}) - ` : ''}{product_type?.name}
           </p>
           {product.product_type_id === 1 ? (
             <div className="mt-2 flex flex-col gap-1 text-sm text-muted-foreground">
@@ -117,6 +119,19 @@ export function ProductListView({
         </div>
 
         <div className="md:col-span-2">
+          <Label>Categorias:</Label>
+          <div className="flex flex-wrap gap-1">
+            {(categories || []).map((category) => (
+              <span
+                key={category.id}
+                className="flex items-center gap-1 rounded-full border px-2 py-1 text-sm"
+              >
+                {category.name}
+              </span>
+            ))}
+          </div>
+          <br />
+          <Label>Colores:</Label>
           <div className="flex flex-wrap gap-1">
             {(colors || []).map((color) => (
               <span

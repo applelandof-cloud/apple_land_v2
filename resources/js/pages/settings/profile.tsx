@@ -15,7 +15,7 @@ import { edit } from '@/routes/profile';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Profile settings',
+        title: 'Perfil',
         href: edit().url,
     },
 ];
@@ -104,9 +104,7 @@ export default function Profile({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="identification">
-                                        C.I.
-                                    </Label>
+                                    <Label htmlFor="identification">C.I.</Label>
 
                                     <Input
                                         id="identification"
@@ -159,12 +157,12 @@ export default function Profile({
 
                                             {status ===
                                                 'verification-link-sent' && (
-                                                    <div className="mt-2 text-sm font-medium text-green-600">
-                                                        A new verification link has
-                                                        been sent to your email
-                                                        address.
-                                                    </div>
-                                                )}
+                                                <div className="mt-2 text-sm font-medium text-green-600">
+                                                    A new verification link has
+                                                    been sent to your email
+                                                    address.
+                                                </div>
+                                            )}
                                         </div>
                                     )}
 
@@ -192,7 +190,6 @@ export default function Profile({
                         )}
                     </Form>
                 </div>
-
             </SettingsLayout>
         </AppLayout>
     );

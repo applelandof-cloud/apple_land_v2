@@ -1,8 +1,10 @@
 import { useAppearance } from '@/hooks/use-appearance';
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 import { type BreadcrumbItem } from '@/types';
-import { type ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import AppHeaderLayout from './app/app-header-layout';
+import { initializeToast } from '@/lib/toast';
+import { useCustomToast } from '@/hooks/use-custom-toast';
 
 interface AppLayoutProps {
     children: ReactNode;
@@ -19,6 +21,11 @@ export default ({
     ...props
 }: AppLayoutProps) => {
     const { layoutStyle } = useAppearance();
+    const { showSuccessToast, showErrorToast } = useCustomToast();
+
+    useEffect(() => {
+        initializeToast({ showSuccessToast, showErrorToast });
+    }, [showSuccessToast, showErrorToast]);
 
     return layoutStyle.toLowerCase() === 'sidebar' ? (
         <AppSidebarLayout
