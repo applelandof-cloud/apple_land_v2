@@ -21,12 +21,7 @@ return new class extends Migration
             $table->foreignId('batch_id')->constrained('batches')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products');
             $table->foreignId('place_id')->constrained('places')->onDelete('cascade');
-            // $table->foreignId('device_id')->nullable()->constrained('devices')->onDelete('set null');
-            // $table->foreignId('accessory_id')->nullable()->constrained('accessories')->onDelete('set null');
-            // $table->foreignId('condition_id')->nullable()->constrained('conditions')->onDelete('set null');
-
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

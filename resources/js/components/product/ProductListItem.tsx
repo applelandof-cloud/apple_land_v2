@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
-import { Category, Color, Currency, Maker, Product, ProductType } from '@/types';
+import { Category, Color, Currency, Product, ProductType } from '@/types';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { forwardRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ProductForm } from './ProductForm';
 import { ProductListView } from './ProductListView';
 import { ProductTileView } from './ProductTileView';
@@ -23,26 +23,18 @@ interface ProductListItemProps
   extends VariantProps<typeof productListItemVariants> {
   product: Product | Partial<Product>;
   className?: string;
-  onSave: (product: Product | Partial<Product>, newImageFiles: File[]) => void;
+  onSave: (product: Product | Partial<Product>) => void;
   onCancel: () => void;
   isInitiallyEditing?: boolean;
   allCategories: Category[];
   allColors: Color[];
-  setAllColorsInParent: (colors: Color[]) => void; // New prop
-  allMakers: Maker[]; // New prop
-  setAllMakersInParent: (makers: Maker[]) => void; // New prop
   allCurrencies: Currency[];
   allProductTypes: ProductType[];
   onSelect?: (productId: number, isSelected: boolean) => void;
   isSelected?: boolean;
-  newImageFiles: File[];
-  setNewImageFiles: (files: File[]) => void;
-  newImagePreviews: string[];
-  setNewImagePreviews: (previews: string[]) => void;
-  handleNewImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const ProductListItem = forwardRef<HTMLDivElement, ProductListItemProps>(({ // Wrap with forwardRef
+export function ProductListItem({
   product,
   viewMode,
   className,
@@ -51,19 +43,11 @@ export const ProductListItem = forwardRef<HTMLDivElement, ProductListItemProps>(
   isInitiallyEditing = false,
   allCategories,
   allColors,
-  setAllColorsInParent, // New prop
-  allMakers, // New prop
-  setAllMakersInParent, // New prop
   allCurrencies,
   allProductTypes,
   onSelect,
   isSelected,
-  newImageFiles,        // New prop
-  setNewImageFiles,     // New prop
-  newImagePreviews,     // New prop
-  setNewImagePreviews,  // New prop
-  handleNewImageChange, // New prop
-}:ProductListItemProps, ref) => { // Accept ref as second arg
+}: ProductListItemProps) {
   const [isEditing, setIsEditing] = useState(isInitiallyEditing);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -72,8 +56,8 @@ export const ProductListItem = forwardRef<HTMLDivElement, ProductListItemProps>(
     setIsEditing(isInitiallyEditing);
   }, [isInitiallyEditing]);
 
-  const handleSave = (productToSave: Product | Partial<Product>, files: File[]) => { // Modified signature
-    onSave(productToSave, files); // Pass files up
+  const handleSave = (productToSave: Product | Partial<Product>) => {
+    onSave(productToSave);
     if ('id' in productToSave) {
       setIsEditing(false);
     }
@@ -87,7 +71,6 @@ export const ProductListItem = forwardRef<HTMLDivElement, ProductListItemProps>(
   if (isEditing) {
     return (
       <div
-        ref={ref} // Attach ref here
         className={cn(
           productListItemVariants({ viewMode: 'list' }),
           className,
@@ -100,18 +83,10 @@ export const ProductListItem = forwardRef<HTMLDivElement, ProductListItemProps>(
           onCancel={handleCancel}
           allCategories={allCategories}
           allColors={allColors}
-          setAllColorsInParent={setAllColorsInParent} // Pass new prop
-          allMakers={allMakers} // Pass new prop
-          setAllMakersInParent={setAllMakersInParent} // Pass new prop
           allCurrencies={allCurrencies}
           allProductTypes={allProductTypes}
           isSaving={isSaving}
           setIsSaving={setIsSaving}
-          newImageFiles={newImageFiles}         // New prop
-          setNewImageFiles={setNewImageFiles}   // New prop
-          newImagePreviews={newImagePreviews}   // New prop
-          setNewImagePreviews={setNewImagePreviews} // New prop
-          handleNewImageChange={handleNewImageChange} // New prop
         />
       </div>
     );
@@ -139,4 +114,3 @@ export const ProductListItem = forwardRef<HTMLDivElement, ProductListItemProps>(
     />
   );
 }
-)

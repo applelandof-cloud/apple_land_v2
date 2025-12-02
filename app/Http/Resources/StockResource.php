@@ -37,20 +37,20 @@ class StockResource extends JsonResource
             'product_type_id' => $this->whenLoaded('product', function () {
                 return $this->product->product_type_id;
             }),
-            'accessory' => $this->whenLoaded('accessory', function () {
-                return $this->accessory ? [
-                    'id' => $this->accessory->id,
-                    'serial_number' => $this->accessory->serial_number,
-                    'size' => $this->accessory->size,
+            'tech_accessory' => $this->whenLoaded('product', function () {
+                return $this->product->techAccessory ? [
+                    'id' => $this->product->techAccessory->id,
+                    'model_number' => $this->product->techAccessory->model_number,
+                    'size' => $this->product->techAccessory->size,
+                    'description' => $this->product->techAccessory->description,
                 ] : null;
             }),
-            'device' => $this->whenLoaded('device', function () {
-                return $this->device ? [
-                    'id' => $this->device->id,
-                    'imei' => $this->device->imei,
-                    'imei2' => $this->device->imei2,
-                    'serial_number' => $this->device->serial_number,
-                    'storage' => $this->device->storage,
+            'device' => $this->whenLoaded('deviceStock', function () {
+                return $this->deviceStock->device ? [
+                    'id' => $this->deviceStock->device->id,
+                    'imei' => $this->deviceStock->device->imei,
+                    'imei2' => $this->deviceStock->device->imei2,
+                    'serial_number' => $this->deviceStock->device->serial_number,
                 ] : null;
             }),
             'created_at' => $this->created_at,

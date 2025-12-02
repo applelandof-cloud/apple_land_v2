@@ -94,12 +94,11 @@ export interface Product {
     name: string;
     status: string; // This is still a placeholder
     product_type_id: number;
-    device_model?: DeviceModel; // Made optional as per other fields
-    tech_accessory?: TechAccessory; // Made optional as per other fields
-    maker_id: number | null; // Changed from makers: Maker[]
-    maker?: Maker; // Eager loaded maker
-    prices: PriceProduct[];
+    device_model: DeviceModel;
+    tech_accessory: TechAccessory;
+    prices: PriceProduct[]; // Change from Price[] to PriceProduct[]
     colors: Color[];
+    makers: Maker[];
     images: Image[];
     type: Type;
     product_type: ProductType;

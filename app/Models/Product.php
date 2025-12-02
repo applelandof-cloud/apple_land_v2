@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Maker; // New import
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -11,7 +10,6 @@ class Product extends Model
         'name',
         'is_active',
         'product_type_id',
-        'maker_id', // Added maker_id to fillable
     ];
 
     public function deviceModel()
@@ -39,11 +37,9 @@ class Product extends Model
         return $this->belongsToMany(Color::class, 'color_product');
     }
 
-    // Removed the old makers (belongsToMany) relationship
-
-    public function maker() // New belongsTo relationship
+    public function makers()
     {
-        return $this->belongsTo(Maker::class);
+        return $this->belongsToMany(Maker::class, 'maker_product');
     }
 
     public function images()

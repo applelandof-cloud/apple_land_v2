@@ -91,7 +91,6 @@ xdebug.client_host=127.0.0.1
 ```
 
 3. install https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug
-
 4. run `php artisan serve` and run debug left panel "Xdebug Local"
 
 ## Clear commands
@@ -109,14 +108,6 @@ php artisan view:clear
 
 `composer clear:dev`
 `composer db:seed:clear:dev`
-
-## format code
-
-on vscode install: esbenp.prettier-vscode
-
-## spell checking
-
-on vscode install: streetsidesoftware.code-spell-checker
 
 ## language spanish supported in Laravel
 

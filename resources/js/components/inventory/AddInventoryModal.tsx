@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,25 +8,58 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import {
-  Product,
-  Place,
-  Status,
-  DeviceModel,
-  StockData,
-  AddInventoryFormData,
-} from './types';
-import { ProductStep } from './add-inventory-steps/ProductStep';
-import { DatesStep } from './add-inventory-steps/DatesStep';
-import { LocationStep } from './add-inventory-steps/LocationStep';
-import { QuantityStep } from './add-inventory-steps/QuantityStep';
-import { StockDetailsStep } from './add-inventory-steps/StockDetailsStep';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/components/ui/use-toast'; // Assuming useToast is available
 
 interface AddInventoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   onInventoryAdded: () => void;
+}
+
+interface Color {
+  id: number;
+  name: string;
+}
+
+interface Status {
+  id: number;
+  name: string;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  product_type_id: number;
+  colors: Color[];
+}
+
+interface Place {
+  id: number;
+  name: string;
+}
+
+interface DeviceModel {
+  storage: string;
+}
+
+interface StockData {
+  color_id: number;
+  is_gift: boolean;
+  status_id: number;
+  imei: string;
+  imei2: string;
+  serial_number: string;
+  storage: string;
 }
 
 export const AddInventoryModal: React.FC<AddInventoryModalProps> = ({
@@ -35,21 +68,26 @@ export const AddInventoryModal: React.FC<AddInventoryModalProps> = ({
   onInventoryAdded,
 }) => {
   const [step, setStep] = useState(1);
+  const [products, setProducts] = useState<Product[]>([]);
   const [places, setPlaces] = useState<Place[]>([]);
   const [statuses, setStatuses] = useState<Status[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [fullSelectedProduct, setFullSelectedProduct] =
-    useState<Product | null>(null);
   const [deviceModel, setDeviceModel] = useState<DeviceModel | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast(); // Initialize useToast
 
-  const [formData, setFormData] = useState<AddInventoryFormData>({
+  const [formData, setFormData] = useState<{
+    product_id: string;
+    entry_date: string;
+    expiration_date: string;
+    place_id: string;
+    count: number;
+    stocks: Partial<StockData>[];
+  }>({
     product_id: '',
     entry_date: '',
     expiration_date: '',
     place_id: '',
-    count: '0',
+    count: 0,
     stocks: [],
   });
 
@@ -57,24 +95,19 @@ export const AddInventoryModal: React.FC<AddInventoryModalProps> = ({
     if (isOpen) {
       // Reset form when modal opens
       setStep(1);
-
-      const today = new Date();
-      const entryDate = today.toISOString().split('T')[0]; // YYYY-MM-DD
-
-      const expiration = new Date();
-      expiration.setMonth(expiration.getMonth() + 3);
-      const expirationDate = expiration.toISOString().split('T')[0]; // YYYY-MM-DD
-
       setFormData({
         product_id: '',
-        entry_date: entryDate,
-        expiration_date: expirationDate,
+        entry_date: '',
+        expiration_date: '',
         place_id: '',
-        count: '0',
+        count: 0,
         stocks: [],
       });
-      setSelectedProduct(null);
       setDeviceModel(null);
+
+      fetch('/api/products')
+        .then((res) => res.json())
+        .then((data) => setProducts(data));
 
       fetch('/api/places')
         .then((res) => res.json())
@@ -87,91 +120,25 @@ export const AddInventoryModal: React.FC<AddInventoryModalProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
-    if (fullSelectedProduct && fullSelectedProduct.product_type_id === 1) {
+    const product = products.find(
+      (p) => p.id === Number(formData.product_id),
+    );
+    if (product && product.product_type_id === 1) {
       // Device
-      fetch(`/api/products/${fullSelectedProduct.id}/devicemodel`)
+      fetch(`/api/products/${formData.product_id}/devicemodel`)
         .then((res) => res.json())
         .then((data) => setDeviceModel(data));
-    } else {
-      setDeviceModel(null);
     }
-  }, [fullSelectedProduct]);
+  }, [formData.product_id, products]);
 
-  useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      product_id: selectedProduct?.id.toString() || '',
-    }));
-  }, [selectedProduct]);
-
-    const [isProductDetailsLoading, setIsProductDetailsLoading] =
-    useState(false);
-
-  useEffect(() => {
-    if (selectedProduct && fullSelectedProduct?.id !== selectedProduct.id) {
-      setIsProductDetailsLoading(true);
-      fetch(`/api/products/${selectedProduct.id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data && data.colors !== undefined) {
-            // Check if colors property exists
-            setFullSelectedProduct(data);
-          } else {
-            console.warn(
-              'Fetched product details do not include colors or colors is undefined:',
-              data,
-            );
-            setFullSelectedProduct((prev) =>
-              prev ? { ...prev, colors: [] } : null,
-            ); // Ensure colors is an array if missing
-          }
-        })
-        .catch((error) => {
-          console.error('Failed to fetch full product details:', error);
-          setFullSelectedProduct(null);
-        })
-        .finally(() => {
-          setIsProductDetailsLoading(false);
-        });
-    } else if (!selectedProduct) {
-      // If selectedProduct becomes null, clear fullSelectedProduct
-      setFullSelectedProduct(null);
-    }
-  }, [selectedProduct, fullSelectedProduct?.id]);
-
-  useEffect(() => {
-    if (places.length > 0 && formData.place_id === '') {
-      setFormData((prev) => ({
-        ...prev,
-        place_id: String(places[0].id),
-      }));
-    }
-  }, [places, formData.place_id]);
-
-  const handleCountChange = (countValue: string) => {
-    // Guard against race condition where product details haven't loaded yet
-    if (!fullSelectedProduct) {
-      return;
-    }
-
-    if (countValue === '') {
-      setFormData({ ...formData, count: '', stocks: [] });
-      return;
-    }
-
-    // Allow only numbers
-    if (!/^\d+$/.test(countValue)) {
-      return;
-    }
-
-    const count = parseInt(countValue, 10);
+  const handleCountChange = (count: number) => {
     const newStocks: Partial<StockData>[] = [];
+    const selectedProduct = products.find(
+      (p) => p.id === Number(formData.product_id),
+    );
     for (let i = 0; i < count; i++) {
       newStocks.push({
-        color_id:
-          fullSelectedProduct.colors?.length > 0
-            ? fullSelectedProduct.colors[0].id
-            : undefined,
+        color_id: selectedProduct?.colors[0]?.id || 1,
         is_gift: false,
         status_id: 1,
         imei: '',
@@ -180,7 +147,7 @@ export const AddInventoryModal: React.FC<AddInventoryModalProps> = ({
         storage: deviceModel?.storage || '',
       });
     }
-    setFormData({ ...formData, count: String(count), stocks: newStocks });
+    setFormData({ ...formData, count, stocks: newStocks });
   };
 
   const handleStockChange = (
@@ -199,43 +166,30 @@ export const AddInventoryModal: React.FC<AddInventoryModalProps> = ({
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const payload = {
-        ...formData,
-        stocks: formData.stocks.map((stock) => ({
-          ...stock,
-          storage: stock.storage,
-        })),
-      };
       const response = await fetch('/api/inventories', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Fallo al agregar inventario');
+        throw new Error(errorData.message || 'Failed to add inventory');
       }
 
       toast({
-        title: '¡Éxito!',
-        description: 'Inventario añadido correctamente.',
+        title: 'Success!',
+        description: 'Inventory added successfully.',
       });
       onInventoryAdded(); // Refresh the list
       onClose(); // Close the modal
     } catch (error: unknown) {
-      let errorMessage = 'Ocurrió un error inesperado.';
+      let errorMessage = 'An unexpected error occurred.';
       if (error instanceof Error) {
         errorMessage = error.message;
-      } else if (
-        typeof error === 'object' &&
-        error !== null &&
-        'message' in error
-      ) {
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
         errorMessage = (error as { message: string }).message;
       }
 
@@ -249,61 +203,194 @@ export const AddInventoryModal: React.FC<AddInventoryModalProps> = ({
     }
   };
 
-  const handleProductSelect = useCallback((product: Product | null) => {
-    setSelectedProduct(product);
-    if (product) {
-      setFormData((prev) => ({
-        ...prev,
-        product_id: product.id.toString(),
-        count: '0',
-        stocks: [],
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        product_id: '',
-        count: '0',
-        stocks: [],
-      }));
-    }
-  }, []); // Removed setSelectedProduct and setFormData from dependencies
+  const selectedProduct = products.find(
+    (p) => p.id === Number(formData.product_id),
+  );
 
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
-          <ProductStep
-            selectedProduct={selectedProduct}
-            onProductSelect={handleProductSelect}
-          />
+          <div>
+            <Label htmlFor="product">Product</Label>
+            <Select
+              onValueChange={(value) => {
+                setDeviceModel(null);
+                setFormData({
+                  ...formData,
+                  product_id: value,
+                  count: 0,
+                  stocks: [],
+                });
+              }}
+              defaultValue={formData.product_id}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a product" />
+              </SelectTrigger>
+              <SelectContent>
+                {products.map((product) => (
+                  <SelectItem key={product.id} value={String(product.id)}>
+                    {product.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         );
       case 2:
-        return <DatesStep formData={formData} setFormData={setFormData} />;
+        return (
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="entry_date">Entry Date</Label>
+              <Input
+                id="entry_date"
+                type="date"
+                value={formData.entry_date}
+                onChange={(e) =>
+                  setFormData({ ...formData, entry_date: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="expiration_date">Expiration Date</Label>
+              <Input
+                id="expiration_date"
+                type="date"
+                value={formData.expiration_date}
+                onChange={(e) =>
+                  setFormData({ ...formData, expiration_date: e.target.value })
+                }
+              />
+            </div>
+          </div>
+        );
       case 3:
         return (
-          <LocationStep
-            formData={formData}
-            setFormData={setFormData}
-            places={places}
-          />
+          <div>
+            <Label htmlFor="place">Place</Label>
+            <Select
+              onValueChange={(value) =>
+                setFormData({ ...formData, place_id: value })
+              }
+              defaultValue={formData.place_id}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a place" />
+              </SelectTrigger>
+              <SelectContent>
+                {places.map((place) => (
+                  <SelectItem key={place.id} value={String(place.id)}>
+                    {place.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         );
       case 4:
         return (
-          <QuantityStep
-            count={formData.count}
-            handleCountChange={handleCountChange}
-            disabled={isProductDetailsLoading}
-          />
+          <div>
+            <Label htmlFor="count">Count</Label>
+            <Input
+              id="count"
+              type="number"
+              value={formData.count}
+              onChange={(e) => handleCountChange(Number(e.target.value))}
+              className="text-2xl p-4"
+            />
+          </div>
         );
       case 5:
+        if (!selectedProduct) {
+          return <p>Please select a product first.</p>;
+        }
         return (
-          <StockDetailsStep
-            formData={formData}
-            handleStockChange={handleStockChange}
-            fullSelectedProduct={fullSelectedProduct}
-            statuses={statuses}
-            deviceModel={deviceModel}
-          />
+          <div className="space-y-2 overflow-y-auto">
+            {formData.stocks.map((stock, index) => (
+              <div key={index} className="p-2 border rounded-md grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 items-end">
+                {selectedProduct.product_type_id === 1 && ( // Device
+                  <>
+                    <div>
+                      <Label htmlFor={`imei_${index}`}>IMEI</Label>
+                      <Input
+                        id={`imei_${index}`}
+                        value={stock.imei}
+                        onChange={(e) =>
+                          handleStockChange(index, 'imei', e.target.value)
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`imei2_${index}`}>IMEI2</Label>
+                      <Input
+                        id={`imei2_${index}`}
+                        value={stock.imei2}
+                        onChange={(e) =>
+                          handleStockChange(index, 'imei2', e.target.value)
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+                <div>
+                  <Label>Color</Label>
+                  <Select
+                    onValueChange={(value) => handleStockChange(index, 'color_id', Number(value))}
+                    defaultValue={String(stock.color_id)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {selectedProduct.colors.map((color) => (
+                        <SelectItem key={color.id} value={String(color.id)}>
+                          {color.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Status</Label>
+                  <Select
+                    onValueChange={(value) => handleStockChange(index, 'status_id', Number(value))}
+                    defaultValue={String(stock.status_id)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {statuses.map((status) => (
+                        <SelectItem key={status.id} value={String(status.id)}>
+                          {status.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Storage</Label>
+                  <Input
+                    value={stock.storage}
+                    onChange={(e) =>
+                      handleStockChange(index, 'storage', e.target.value)
+                    }
+                  />
+                </div>
+                <div className="flex items-center space-x-2 pb-2">
+                  <Checkbox
+                    id={`is_gift_${index}`}
+                    checked={stock.is_gift}
+                    onCheckedChange={(checked) =>
+                      handleStockChange(index, 'is_gift', !!checked)
+                    }
+                  />
+                  <Label htmlFor={`is_gift_${index}`}>Is Gift?</Label>
+                </div>
+              </div>
+            ))}
+          </div>
         );
       default:
         return null;
@@ -312,47 +399,30 @@ export const AddInventoryModal: React.FC<AddInventoryModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent
-        onPointerDownOutside={(event) => {
-          const popover = document.querySelector(
-            '[data-radix-popover-content-wrapper]',
-          );
-          if (popover && popover.contains(event.target as Node)) {
-            event.preventDefault();
-          }
-        }}
-        className="md:max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl"
-      >
+      <DialogContent className="w-screen h-screen">
         <DialogHeader>
-          <DialogTitle>Agregar Nuevo Inventario</DialogTitle>
-          <DialogDescription>Paso {step} de 5</DialogDescription>
+          <DialogTitle>Add New Inventory</DialogTitle>
+          <DialogDescription>Step {step} of 5</DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <div className="space-y-2 overflow-y-auto">{renderStep()}</div>
+          <div className="space-y-2 overflow-y-auto">
+            {renderStep()}
+          </div>
         </div>
         <DialogFooter>
           <Button onClick={onClose} variant="outline" disabled={isSubmitting}>
-            Cancelar
+            Cancel
           </Button>
           {step > 1 && (
-            <Button
-              onClick={handleBack}
-              variant="outline"
-              disabled={isSubmitting}
-            >
-              Atrás
+            <Button onClick={handleBack} variant="outline" disabled={isSubmitting}>
+              Back
             </Button>
           )}
           {step < 5 ? (
-            <Button
-              onClick={handleNext}
-              disabled={isSubmitting || (step === 1 && !formData.product_id)}
-            >
-              Siguiente
-            </Button>
+            <Button onClick={handleNext} disabled={isSubmitting}>Next</Button>
           ) : (
             <Button onClick={handleSubmit} disabled={isSubmitting}>
-              {isSubmitting ? 'Guardando...' : 'Guardar'}
+              {isSubmitting ? 'Saving...' : 'Save'}
             </Button>
           )}
         </DialogFooter>

@@ -10,7 +10,6 @@ import {
 interface Item {
     id: string | number;
     name: string;
-    hex_code?: string;
 }
 
 interface MultiSelectDropdownProps {
@@ -44,16 +43,7 @@ export function MultiSelectDropdown({
                         onCheckedChange={() =>
                             onSelectionChange(item.id.toString())
                         }
-                        className="flex items-center"
                     >
-                        {item.hex_code && (
-                            <span
-                                className="mr-2 h-4 w-4 rounded-full border"
-                                style={{
-                                    backgroundColor: item.hex_code,
-                                }}
-                            ></span>
-                        )}
                         {item.name}
                     </DropdownMenuCheckboxItem>
                 ))}

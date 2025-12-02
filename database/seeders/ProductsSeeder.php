@@ -19,35 +19,25 @@ class ProductsSeeder extends Seeder
                 'name' => 'Samsung note 8',
                 'is_active' => true,
                 'product_type_id' => 1,
-                'maker_id' => 2, // Samsung
             ],
             [
                 'id' => 2,
                 'name' => 'Samsung s23ultra',
                 'is_active' => true,
                 'product_type_id' => 1,
-                'maker_id' => 2, // Samsung
             ],
             [
                 'id' => 3,
                 'name' => 'Samsung S24',
                 'is_active' => true,
                 'product_type_id' => 1,
-                'maker_id' => 2, // Samsung
+             
             ],
             [
                 'id' => 4,
                 'name' => 'iPhone 15',
                 'is_active' => true,
                 'product_type_id' => 1,
-                'maker_id' => 1, // Apple
-            ],
-            [
-                'id' => 5,
-                'name' => 'Funda para Ipad',
-                'is_active' => true,
-                'product_type_id' => 2,
-                'maker_id' => 1, // Apple, assuming it's for Apple iPad
             ]
         ]);
     }

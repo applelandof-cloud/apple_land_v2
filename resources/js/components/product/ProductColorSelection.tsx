@@ -1,7 +1,12 @@
 import { ColorManagerModal } from '@/components/color/ColorManagerModal';
 import { EditableField } from '@/components/EditableField';
 import { Button } from '@/components/ui/button';
-import { MultiSelectDropdown } from '@/components/custom/MultiSelectDropdown';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Color, Product } from '@/types';
 import { Pencil } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
@@ -12,16 +17,14 @@ interface ProductColorSelectionProps {
     React.SetStateAction<Product | Partial<Product>>
   >;
   allColors: Color[];
-  setAllColors: (colors: Color[]) => void; // This is the local setter for allColors in ProductForm
-  setAllColorsInParent: (colors: Color[]) => void; // This is the setter from ProductsPage
+  setAllColors: (colors: Color[]) => void;
 }
 
 export function ProductColorSelection({
   editedProduct,
   setEditedProduct,
   allColors,
-  setAllColors, // Local setter from ProductForm
-  setAllColorsInParent, // Setter from ProductsPage
+  setAllColors,
 }: ProductColorSelectionProps) {
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
 
@@ -30,15 +33,14 @@ export function ProductColorSelection({
       const response = await fetch('/api/colors');
       if (response.ok) {
         const data = await response.json();
-        setAllColors(data); // Update local state for immediate display
-        setAllColorsInParent(data); // Update parent's state
+        setAllColors(data);
         return data;
       }
     } catch (error) {
       console.error('Failed to fetch colors:', error);
     }
     return null;
-  }, [setAllColors, setAllColorsInParent]); // Added setAllColorsInParent to deps
+  }, [setAllColors]);
 
   const handleColorModalClose = async (needsUpdate: boolean) => {
     setIsColorModalOpen(false);
@@ -68,13 +70,6 @@ export function ProductColorSelection({
     setEditedProduct({ ...editedProduct, colors: newColors });
   };
 
-  const handleColorSelection = (id: string) => {
-    const color = allColors.find((c) => c.id.toString() === id);
-    if (color) {
-      handleColorChange(color);
-    }
-  };
-
   return (
     <>
       <ColorManagerModal
@@ -84,14 +79,34 @@ export function ProductColorSelection({
       <EditableField label="Colores">
         <>
           <div className="flex items-center gap-2">
-            <MultiSelectDropdown
-              items={allColors}
-              selectedIds={(editedProduct.colors || []).map((c) =>
-                c.id.toString(),
-              )}
-              onSelectionChange={handleColorSelection}
-              placeholder="Seleccionar Colores"
-            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start font-normal"
+                >
+                  Seleccionar Colores
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {allColors.map((color) => (
+                  <DropdownMenuCheckboxItem
+                    key={color.id}
+                    checked={(editedProduct.colors || []).some(
+                      (c) => c.id === color.id,
+                    )}
+                    onCheckedChange={() => handleColorChange(color)}
+                    className="flex items-center"
+                  >
+                    <span
+                      className="mr-2 h-4 w-4 rounded-full border"
+                      style={{ backgroundColor: color.hex_code }}
+                    ></span>
+                    {color.name}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="ghost"
               size="icon"

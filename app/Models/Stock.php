@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Stock extends Model
 {
     use HasFactory;
-    use SoftDeletes;
+
     protected $fillable = [
         'is_gift',
         'is_visible',
@@ -18,7 +18,6 @@ class Stock extends Model
         'batch_id',
         'product_id',
         'place_id',
-        'condition_id',
     ];
 
     public function color()
@@ -51,17 +50,8 @@ class Stock extends Model
         return $this->belongsTo(Place::class);
     }
 
-    public function device()
+    public function deviceStock()
     {
-        return $this->hasOne(Device::class);
-    }
-
-    public function accessory()
-    {
-        return $this->hasOne(Accessory::class);
-    }
-    public function condition()
-    {
-        return $this->belongsTo(Condition::class);
+        return $this->hasOne(DeviceStock::class);
     }
 }
