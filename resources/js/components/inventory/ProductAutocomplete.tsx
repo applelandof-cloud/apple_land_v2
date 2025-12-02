@@ -68,7 +68,7 @@ export function ProductAutocomplete({ onProductSelect, selectedProduct }: Produc
     return () => {
       controller.abort();
     };
-  }, [debouncedSearchTerm, onProductSelect, selectedProduct]);
+  }, [debouncedSearchTerm, onProductSelect]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

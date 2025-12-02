@@ -11,6 +11,5 @@ require __DIR__ ."/api/places.php";
 require __DIR__ ."/api/statuses.php";
 require __DIR__ ."/api/inventory.php";
 require __DIR__ ."/api/stocks.php";
-require __DIR__ ."/api/makers.php";
+require __DIR__ ."/api/makers.php"; // New include for makers API routes
 require __DIR__ ."/api/product-types.php";
-require __DIR__ ."/api/users.php";

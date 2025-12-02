@@ -1,9 +1,9 @@
 import { MultiSelectDropdown } from '@/components/custom/MultiSelectDropdown';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Place, Role, User } from '@/types';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 
 interface CreateStaffFormProps {
     newUser: Partial<User>;
@@ -34,9 +34,7 @@ export default function CreateStaffForm({
                 <h2 className="mb-4 text-xl font-semibold">Nuevo Usuario</h2>
 
                 <div>
-                    <h3 className="mb-2 text-lg font-medium">
-                        Información Personal
-                    </h3>
+                    <h3 className="mb-2 text-lg font-medium">Información Personal</h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
                             <Label htmlFor="name">Nombre</Label>
@@ -46,13 +44,8 @@ export default function CreateStaffForm({
                                 placeholder="Nombre"
                                 value={newUser.name || ''}
                                 onChange={handleInputChange}
-                                className={errors.name ? 'border-red-500' : ''}
                             />
-                            {errors.name && (
-                                <p className="mt-1 text-xs text-red-500">
-                                    {errors.name[0]}
-                                </p>
-                            )}
+                            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name[0]}</p>}
                         </div>
                         <div>
                             <Label htmlFor="last_name">Apellido</Label>
@@ -62,15 +55,8 @@ export default function CreateStaffForm({
                                 placeholder="Apellido"
                                 value={newUser.last_name || ''}
                                 onChange={handleInputChange}
-                                className={
-                                    errors.last_name ? 'border-red-500' : ''
-                                }
                             />
-                            {errors.last_name && (
-                                <p className="mt-1 text-xs text-red-500">
-                                    {errors.last_name[0]}
-                                </p>
-                            )}
+                            {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name[0]}</p>}
                         </div>
                         <div>
                             <Label htmlFor="identification">C.I.</Label>
@@ -80,17 +66,8 @@ export default function CreateStaffForm({
                                 placeholder="C.I."
                                 value={newUser.identification || ''}
                                 onChange={handleInputChange}
-                                className={
-                                    errors.identification
-                                        ? 'border-red-500'
-                                        : ''
-                                }
                             />
-                            {errors.identification && (
-                                <p className="mt-1 text-xs text-red-500">
-                                    {errors.identification[0]}
-                                </p>
-                            )}
+                            {errors.identification && <p className="text-red-500 text-xs mt-1">{errors.identification[0]}</p>}
                         </div>
                         <div>
                             <Label htmlFor="phone_number">Telefono</Label>
@@ -100,15 +77,8 @@ export default function CreateStaffForm({
                                 placeholder="Telefono"
                                 value={newUser.phone_number || ''}
                                 onChange={handleInputChange}
-                                className={
-                                    errors.phone_number ? 'border-red-500' : ''
-                                }
                             />
-                            {errors.phone_number && (
-                                <p className="mt-1 text-xs text-red-500">
-                                    {errors.phone_number[0]}
-                                </p>
-                            )}
+                            {errors.phone_number && <p className="text-red-500 text-xs mt-1">{errors.phone_number[0]}</p>}
                         </div>
                     </div>
                 </div>
@@ -116,9 +86,7 @@ export default function CreateStaffForm({
                 <hr className="my-4" />
 
                 <div>
-                    <h3 className="mb-2 text-lg font-medium">
-                        Información de la Cuenta
-                    </h3>
+                    <h3 className="mb-2 text-lg font-medium">Información de la Cuenta</h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
                         <div>
                             <Label htmlFor="username">Username</Label>
@@ -128,15 +96,8 @@ export default function CreateStaffForm({
                                 placeholder="Username"
                                 value={newUser.username || ''}
                                 onChange={handleInputChange}
-                                className={
-                                    errors.username ? 'border-red-500' : ''
-                                }
                             />
-                            {errors.username && (
-                                <p className="mt-1 text-xs text-red-500">
-                                    {errors.username[0]}
-                                </p>
-                            )}
+                            {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username[0]}</p>}
                         </div>
                         <div>
                             <Label htmlFor="email">Email</Label>
@@ -146,13 +107,8 @@ export default function CreateStaffForm({
                                 placeholder="Email"
                                 value={newUser.email || ''}
                                 onChange={handleInputChange}
-                                className={errors.email ? 'border-red-500' : ''}
                             />
-                            {errors.email && (
-                                <p className="mt-1 text-xs text-red-500">
-                                    {errors.email[0]}
-                                </p>
-                            )}
+                            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email[0]}</p>}
                         </div>
                         <div>
                             <Label htmlFor="roles">Roles</Label>
@@ -160,26 +116,17 @@ export default function CreateStaffForm({
                                 items={roles}
                                 selectedIds={
                                     newUser.roles
-                                        ? newUser.roles.map((r) =>
-                                              r.id.toString(),
-                                          )
+                                        ? newUser.roles.map((r) => r.id.toString())
                                         : []
                                 }
                                 onSelectionChange={handleRoleChange}
                                 placeholder="Seleccionar Roles"
                             />
-                            {errors.roles && (
-                                <p className="mt-1 text-xs text-red-500">
-                                    {errors.roles[0]}
-                                </p>
-                            )}
+                            {errors.roles && <p className="text-red-500 text-xs mt-1">{errors.roles[0]}</p>}
                             <div className="mt-2 flex flex-wrap gap-1.5">
                                 {newUser.roles &&
                                     newUser.roles.map((role) => (
-                                        <Badge
-                                            key={role.id}
-                                            variant="secondary"
-                                        >
+                                        <Badge key={role.id} variant="secondary">
                                             {role.name}
                                         </Badge>
                                     ))}
@@ -191,19 +138,13 @@ export default function CreateStaffForm({
                                 items={places}
                                 selectedIds={
                                     newUser.places
-                                        ? newUser.places.map((p) =>
-                                              p.id.toString(),
-                                          )
+                                        ? newUser.places.map((p) => p.id.toString())
                                         : []
                                 }
                                 onSelectionChange={handlePlaceChange}
                                 placeholder="Seleccionar Sucursales"
                             />
-                            {errors.places && (
-                                <p className="mt-1 text-xs text-red-500">
-                                    {errors.places[0]}
-                                </p>
-                            )}
+                            {errors.places && <p className="text-red-500 text-xs mt-1">{errors.places[0]}</p>}
                             <div className="mt-2 flex flex-wrap gap-1.5">
                                 {newUser.places &&
                                     newUser.places.map((place) => (
@@ -222,7 +163,9 @@ export default function CreateStaffForm({
                     <Button variant="outline" onClick={handleCancel}>
                         Cancelar
                     </Button>
-                    <Button onClick={handleSaveNewUser}>Guardar</Button>
+                    <Button onClick={handleSaveNewUser}>
+                        Guardar
+                    </Button>
                 </div>
             </div>
         </div>

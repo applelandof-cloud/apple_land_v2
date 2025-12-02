@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('identification', 12)->nullable();
             $table->string('phone_number', 20)->nullable();
             $table->boolean('is_active')->default(true);
-            $table->string('active_role', 20)->nullable();
             $table->rememberToken()->nullable();
             $table->timestamps();
         });

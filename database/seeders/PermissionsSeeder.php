@@ -58,14 +58,14 @@ class PermissionsSeeder extends Seeder
             [
                 'module' => 'Ventas',
                 'name' => 'crear_ventas',
-                'description' => 'Permitir crear nueva venta',
+                'description' => 'Permitir crear nuevas ventas',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'module' => 'Ventas',
                 'name' => 'editar_ventas',
-                'description' => 'Permitir editar ventas',
+                'description' => 'Permitir editar ventas existentes',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -101,13 +101,6 @@ class PermissionsSeeder extends Seeder
                 'module' => 'Usuarios',
                 'name' => 'eliminar_usuarios',
                 'description' => 'Permitir eliminar usuarios del sistema',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'module' => 'Settings',
-                'name' => 'reset_password',
-                'description' => 'Permitir cambiar el Password',
                 'created_at' => now(),
                 'updated_at' => now()
             ]

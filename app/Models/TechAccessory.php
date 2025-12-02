@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class TechAccessory extends Model
 {
-    protected $primaryKey = "product_id";
     protected $fillable = [
         'product_id',
         'model_number',
@@ -16,6 +15,6 @@ class TechAccessory extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id');
+        return $this->belongsTo(Product::class);
     }
 }

@@ -46,17 +46,11 @@ export function CategoryManagerModal({
   }, []);
 
   useEffect(() => {
-    const controller = new AbortController();
-
     if (open) {
       (async () => {
         await fetchCategories();
       })();
     }
-
-    return () => {
-      controller.abort();
-    };
   }, [open, fetchCategories]);
 
   const handleEditingCategoryChange = (
@@ -138,11 +132,7 @@ export function CategoryManagerModal({
                   placeholder="Nombre Categoria (e.g. Laptops)"
                   value={editingCategory.name || ''}
                   onChange={handleEditingCategoryChange}
-                  className={
-                    validationErrors.name && validationErrors.name.length > 0
-                      ? 'border-red-500'
-                      : ''
-                  }
+                  className={validationErrors.name && validationErrors.name.length > 0 ? 'border-red-500' : ''}
                 />
                 {validationErrors.name && validationErrors.name.length > 0 && (
                   <p className="mt-1 text-xs text-red-500">
@@ -181,8 +171,8 @@ export function CategoryManagerModal({
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      setEditingCategory(category);
-                      setValidationErrors({});
+                        setEditingCategory(category);
+                        setValidationErrors({});
                     }}
                   >
                     <Pencil className="h-4 w-4" />

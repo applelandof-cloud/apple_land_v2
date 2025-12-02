@@ -18,12 +18,12 @@ class StockController extends Controller
 
         $inventory = Inventory::findOrFail($request->input('inventory_id'));
 
-        $query = $inventory->stocks()->with(['color', 'status', 'deviceStock.device', 'product.productType', 'product.techAccessory']);
+        $query = $inventory->stocks()->with(['color', 'status', 'device', 'product.productType', 'product.techAccessory']);
 
         if ($request->has('search')) {
             $searchTerm = $request->input('search');
             $query->where(function ($q) use ($searchTerm) {
-                $q->whereHas('deviceStock.device', function ($q) use ($searchTerm) {
+                $q->whereHas('device', function ($q) use ($searchTerm) {
                     $q->where('imei', 'like', '%' . $searchTerm . '%')
                       ->orWhere('imei2', 'like', '%' . $searchTerm . '%')
                       ->orWhere('serial_number', 'like', '%' . $searchTerm . '%');

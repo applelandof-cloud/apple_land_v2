@@ -1,9 +1,9 @@
-import { EditableField } from '@/components/EditableField';
-import { MultiSelectDropdown } from '@/components/custom/MultiSelectDropdown';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Switch from '@/components/ui/switch';
+import { EditableField } from '@/components/EditableField';
+import { MultiSelectDropdown } from '@/components/custom/MultiSelectDropdown';
 import { Place, Role, User } from '@/types';
 import { Check, Pencil, X } from 'lucide-react';
 import { ChangeEvent } from 'react';
@@ -20,7 +20,6 @@ interface EditStaffFormProps {
     setIsPlaceManagerModalOpen: (isOpen: boolean) => void;
     handleChangePasswordClick: (userId: number) => void;
     errors: Record<string, string[]>;
-    setErrors: React.Dispatch<React.SetStateAction<Record<string, string[]>>>; // Corrected type
 }
 
 export default function EditStaffForm({
@@ -35,7 +34,6 @@ export default function EditStaffForm({
     setIsPlaceManagerModalOpen,
     handleChangePasswordClick,
     errors,
-    setErrors,
 }: EditStaffFormProps) {
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -43,13 +41,6 @@ export default function EditStaffForm({
             ...editingUserData,
             [name]: value,
         });
-        if (errors[name]) {
-            setErrors((prev) => {
-                const newErrors = { ...prev };
-                delete newErrors[name];
-                return newErrors;
-            });
-        }
     };
 
     return (
@@ -61,14 +52,9 @@ export default function EditStaffForm({
                         name="name"
                         value={editingUserData.name}
                         onChange={handleInputChange}
-                        className={errors.name ? 'border-red-500' : ''}
                     />
                 </EditableField>
-                {errors?.name && (
-                    <p className="mt-1 text-xs text-red-500">
-                        {errors.name[0]}
-                    </p>
-                )}
+                {errors?.name && <p className="text-red-500 text-xs mt-1">{errors.name[0]}</p>}
 
                 <EditableField label="Apellido">
                     <Input
@@ -76,14 +62,10 @@ export default function EditStaffForm({
                         name="last_name"
                         value={editingUserData.last_name}
                         onChange={handleInputChange}
-                        className={errors.last_name ? 'border-red-500' : ''}
+                        className="mt-2"
                     />
                 </EditableField>
-                {errors?.last_name && (
-                    <p className="mt-1 text-xs text-red-500">
-                        {errors.last_name[0]}
-                    </p>
-                )}
+                {errors?.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name[0]}</p>}
 
                 <EditableField label="Username">
                     <Input
@@ -91,14 +73,10 @@ export default function EditStaffForm({
                         name="username"
                         value={editingUserData.username}
                         onChange={handleInputChange}
-                        className={errors.username ? 'border-red-500' : ''}
+                        className="mt-2"
                     />
                 </EditableField>
-                {errors?.username && (
-                    <p className="mt-1 text-xs text-red-500">
-                        {errors.username[0]}
-                    </p>
-                )}
+                {errors?.username && <p className="text-red-500 text-xs mt-1">{errors.username[0]}</p>}
 
                 <EditableField label="Email">
                     <Input
@@ -106,14 +84,10 @@ export default function EditStaffForm({
                         name="email"
                         value={editingUserData.email}
                         onChange={handleInputChange}
-                        className={errors.email ? 'border-red-500' : ''}
+                        className="mt-2"
                     />
                 </EditableField>
-                {errors?.email && (
-                    <p className="mt-1 text-xs text-red-500">
-                        {errors.email[0]}
-                    </p>
-                )}
+                {errors?.email && <p className="text-red-500 text-xs mt-1">{errors.email[0]}</p>}
 
                 <EditableField label="C.I.">
                     <Input
@@ -121,16 +95,10 @@ export default function EditStaffForm({
                         name="identification"
                         value={editingUserData.identification}
                         onChange={handleInputChange}
-                        className={
-                            errors.identification ? 'border-red-500' : ''
-                        }
+                        className="mt-2"
                     />
                 </EditableField>
-                {errors?.identification && (
-                    <p className="mt-1 text-xs text-red-500">
-                        {errors.identification[0]}
-                    </p>
-                )}
+                {errors?.identification && <p className="text-red-500 text-xs mt-1">{errors.identification[0]}</p>}
 
                 <EditableField label="Telefono">
                     <Input
@@ -138,14 +106,10 @@ export default function EditStaffForm({
                         name="phone_number"
                         value={editingUserData.phone_number}
                         onChange={handleInputChange}
-                        className={errors.phone_number ? 'border-red-500' : ''}
+                        className="mt-2"
                     />
                 </EditableField>
-                {errors?.phone_number && (
-                    <p className="mt-1 text-xs text-red-500">
-                        {errors.phone_number[0]}
-                    </p>
-                )}
+                {errors?.phone_number && <p className="text-red-500 text-xs mt-1">{errors.phone_number[0]}</p>}
             </div>
             <div className="col-span-2">
                 <MultiSelectDropdown
