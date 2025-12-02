@@ -31,7 +31,7 @@ const toastVariants = cva(
       variant: {
         default: "border bg-background text-foreground",
         destructive:
-          "destructive group border-destructive bg-destructive text-destructive-foreground",
+          "destructive group border-destructive bg-destructive text-white",
       },
     },
     defaultVariants: {
@@ -252,7 +252,7 @@ function dispatch(action: Action) {
 }
 
 type Toast = {
-  [key: string]: any;
+  [key: string]: unknown;
 } & Omit<ToasterToast, "id">;
 
 function useToast() {

@@ -1,6 +1,7 @@
 # Inventory and sales web app
 
 ## Documentation
+
 All project diagrams are stored in the `documentation/` directory.
 
 This folder contains:
@@ -31,14 +32,15 @@ Generate the updated `.png` file by running PlantUML (you could use vscode exten
 Commit both the updated `.puml` and `.png` files.
 
 ## Setup
-1) install xampp
-2) `npm install`
-3) `composer install`
-4) `npm run build`
-5) `composer run dev`
 
+1. install xampp
+2. `npm install`
+3. `composer install`
+4. `npm run build`
+5. `composer run dev`
 
 ## Database
+
 The migration feature was used to define the database tables. You can find these in the database directory.
 There is also an .excalidraw file included — you can open it on Excalidraw https://excalidraw.com/
 by uploading the .excalidraw extension.
@@ -47,7 +49,7 @@ You can create a new database and apply migration with following command:
 
 `php artisan migrate`
 
-This command take the database name from  `DB_DATABASE=my_database` set in `.env` file. If the database `my_database` does not exist in phpMyAdmin, the command will create it along with all tables.
+This command take the database name from `DB_DATABASE=my_database` set in `.env` file. If the database `my_database` does not exist in phpMyAdmin, the command will create it along with all tables.
 
 To populate the tables with initial data, you can run the seeders using:
 
@@ -71,13 +73,14 @@ This:
 2. Runs all migrations from scratch.
 3. Reseeds the database using DatabaseSeeder.
 
-
 ## setup sail (docker environment)
+
 https://laravel.com/docs/12.x/sail
 
 ## setup xdebug (local xampp environment)
-1) https://xdebug.org/wizard add php_xdebug.dll
-2) php.ini add:
+
+1. https://xdebug.org/wizard add php_xdebug.dll
+2. php.ini add:
 
 ```
 [xdebug]
@@ -86,12 +89,13 @@ xdebug.start_with_request=yes
 xdebug.client_port=9003
 xdebug.client_host=127.0.0.1
 ```
-3) install https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug
 
-4) run `php artisan serve` and run debug left panel "Xdebug Local"
+3. install https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug
 
+4. run `php artisan serve` and run debug left panel "Xdebug Local"
 
 ## Clear commands
+
 php artisan cache:clear
 php artisan config:clear
 php artisan event:clear
@@ -102,5 +106,22 @@ php artisan route:clear
 php artisan view:clear
 
 ## Run db migrations, seeds, clear commands, and run development at once.
+
 `composer clear:dev`
 `composer db:seed:clear:dev`
+
+## format code
+
+on vscode install: esbenp.prettier-vscode
+
+## spell checking
+
+on vscode install: streetsidesoftware.code-spell-checker
+
+## language spanish supported in Laravel
+
+install required dependency
+`composer require laravel-lang/lang`
+
+Add a spanish language
+`php artisan lang:add es`

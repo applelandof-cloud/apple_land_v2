@@ -5,7 +5,8 @@ import SettingsLayout from '@/layouts/settings/layout';
 import { type BreadcrumbItem } from '@/types';
 import { Transition } from '@headlessui/react';
 import { Form, Head } from '@inertiajs/react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import PasswordVisibilityToggle from '@/components/password-visibility-toggle';
 
 import HeadingSmall from '@/components/heading-small';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Password() {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -64,14 +68,20 @@ export default function Password() {
                                         Password Actual
                                     </Label>
 
-                                    <Input
-                                        id="current_password"
-                                        ref={currentPasswordInput}
-                                        name="current_password"
-                                        type="password"
-                                        className="mt-1 block w-full"
-                                        autoComplete="current-password"
-                                    />
+                                    <div className="relative">
+                                        <Input
+                                            id="current_password"
+                                            ref={currentPasswordInput}
+                                            name="current_password"
+                                            type={showCurrentPassword ? "text" : "password"}
+                                            className="mt-1 block w-full pr-10"
+                                            autoComplete="current-password"
+                                        />
+                                        <PasswordVisibilityToggle
+                                            isVisible={showCurrentPassword}
+                                            onToggle={() => setShowCurrentPassword(prev => !prev)}
+                                        />
+                                    </div>
 
                                     <InputError
                                         message={errors.current_password}
@@ -83,14 +93,20 @@ export default function Password() {
                                         Nueva Password
                                     </Label>
 
-                                    <Input
-                                        id="password"
-                                        ref={passwordInput}
-                                        name="password"
-                                        type="password"
-                                        className="mt-1 block w-full"
-                                        autoComplete="new-password"
-                                    />
+                                    <div className="relative">
+                                        <Input
+                                            id="password"
+                                            ref={passwordInput}
+                                            name="password"
+                                            type={showPassword ? "text" : "password"}
+                                            className="mt-1 block w-full pr-10"
+                                            autoComplete="new-password"
+                                        />
+                                        <PasswordVisibilityToggle
+                                            isVisible={showPassword}
+                                            onToggle={() => setShowPassword(prev => !prev)}
+                                        />
+                                    </div>
 
                                     <InputError message={errors.password} />
                                 </div>
@@ -100,13 +116,19 @@ export default function Password() {
                                         Confirmar Password
                                     </Label>
 
-                                    <Input
-                                        id="password_confirmation"
-                                        name="password_confirmation"
-                                        type="password"
-                                        className="mt-1 block w-full"
-                                        autoComplete="new-password"
-                                    />
+                                    <div className="relative">
+                                        <Input
+                                            id="password_confirmation"
+                                            name="password_confirmation"
+                                            type={showPasswordConfirmation ? "text" : "password"}
+                                            className="mt-1 block w-full pr-10"
+                                            autoComplete="new-password"
+                                        />
+                                        <PasswordVisibilityToggle
+                                            isVisible={showPasswordConfirmation}
+                                            onToggle={() => setShowPasswordConfirmation(prev => !prev)}
+                                        />
+                                    </div>
 
                                     <InputError
                                         message={errors.password_confirmation}

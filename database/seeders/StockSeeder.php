@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Inventory; // Import the Inventory model
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
