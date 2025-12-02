@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Resources\InventoryResource;
 use App\Http\Resources\StockResource;
 use App\Models\Batch;

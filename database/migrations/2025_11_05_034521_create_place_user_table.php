@@ -15,7 +15,6 @@ return new class extends Migration
             $table->primary(['place_id', 'user_id']);
             $table->foreignId('place_id')->constrained('places')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->timestamps();
         });
     }
 
