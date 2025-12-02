@@ -1,30 +1,21 @@
 import InputError from '@/components/input-error';
-import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
-import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { Form, Head } from '@inertiajs/react';
 
 interface LoginProps {
-    status?: string;
-    canRegister: boolean;
+  status?: string;
 }
 
-export default function Login({
-    status,
-    canRegister,
-}: LoginProps) {
-    return (
-        <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
-        >
-            <Head title="Log in" />
+export default function Login({ status }: LoginProps) {
+  return (
+    <AuthLayout title="Login" description="Ingresa tu email y tu password">
+      <Head title="Log in" />
 
       <Form
         {...store.form()}
@@ -35,7 +26,7 @@ export default function Login({
           <>
             <div className="grid gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -81,15 +72,6 @@ export default function Login({
                 Log in
               </Button>
             </div>
-
-            {canRegister && (
-              <div className="text-center text-sm text-muted-foreground">
-                Don't have an account?{' '}
-                <TextLink href={register()} tabIndex={5}>
-                  Sign up
-                </TextLink>
-              </div>
-            )}
           </>
         )}
       </Form>

@@ -75,6 +75,13 @@ export default function Staff() {
     ) => {
         const { name, value } = e.target;
         setNewUser((prev) => ({ ...prev, [name]: value }));
+        if (creationErrors[name]) {
+            setCreationErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors[name];
+                return newErrors;
+            });
+        }
     };
 
     const handleNewUserRoleChange = (roleId: string) => {
@@ -86,6 +93,14 @@ export default function Staff() {
             ? currentRoles.filter((r) => r.id !== role.id)
             : [...currentRoles, role];
         setNewUser({ ...newUser, roles: newRoles });
+
+        if (creationErrors.roles) {
+            setCreationErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors.roles;
+                return newErrors;
+            });
+        }
     };
 
     const handleNewUserPlaceChange = (placeId: string) => {
@@ -97,6 +112,14 @@ export default function Staff() {
             ? currentPlaces.filter((p) => p.id !== place.id)
             : [...currentPlaces, place];
         setNewUser({ ...newUser, places: newPlaces });
+
+        if (creationErrors.places) {
+            setCreationErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors.places;
+                return newErrors;
+            });
+        }
     };
 
     const handleSaveNewUser = async () => {
@@ -287,6 +310,14 @@ export default function Staff() {
             ? currentRoles.filter((r) => r.id !== role.id)
             : [...currentRoles, role];
         setEditingUserData({ ...editingUserData, roles: newRoles });
+
+        if (updateErrors.roles) {
+            setUpdateErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors.roles;
+                return newErrors;
+            });
+        }
     };
 
     const handlePlaceChange = (placeId: string) => {
@@ -298,6 +329,14 @@ export default function Staff() {
             ? currentPlaces.filter((p) => p.id !== place.id)
             : [...currentPlaces, place];
         setEditingUserData({ ...editingUserData, places: newPlaces });
+
+        if (updateErrors.places) {
+            setUpdateErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors.places;
+                return newErrors;
+            });
+        }
     };
 
     const confirmDelete = () => {
@@ -434,6 +473,7 @@ export default function Staff() {
                         handleRoleChange={handleRoleChange}
                         handlePlaceChange={handlePlaceChange}
                         updateErrors={updateErrors}
+                        setErrors={setUpdateErrors}
                     />
                 </div>
                 <div className="fixed right-6 bottom-6 z-50 flex space-x-4">
@@ -471,7 +511,26 @@ export default function Staff() {
                             </AlertDialogContent>
                         </AlertDialog>
                     )}
-                    <FloatingActionButton onClick={() => setIsCreating(true)} />
+                    <FloatingActionButton onClick={() => {
+                        setIsCreating(true);
+                        const defaultRoles: Role[] = [];
+                        const sellerRole = roles.find(r => r.name === 'seller');
+                        if (sellerRole) {
+                            defaultRoles.push(sellerRole);
+                        }
+
+                        const defaultPlaces: Place[] = places.length > 0 ? [places[0]] : [];
+
+                        setNewUser({
+                            name: '',
+                            last_name: '',
+                            username: '',
+                            email: '',
+                            password: '',
+                            roles: defaultRoles,
+                            places: defaultPlaces,
+                        });
+                    }} />
                 </div>
             </div>
             {isCreating && (

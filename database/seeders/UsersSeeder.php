@@ -15,13 +15,14 @@ class UsersSeeder extends Seeder
     {
         User::query()->delete();
         User::create([
-            'name' => 'Juan',
+            'name' => 'Ivo',
             'last_name' => 'Rojas',
-            'username' => 'juan',
-            'email' => 'juan@gmail.com',
+            'username' => 'ivo',
+            'email' => 'ivo@gmail.com',
             'password' => Hash::make('123456'),
             'identification' => '1234567890',
             'phone_number' => '77654321',
+            'active_role'=> 'seller',
         ]);
 
         User::create([
@@ -32,6 +33,7 @@ class UsersSeeder extends Seeder
             'password' => Hash::make('123456'),
             'identification' => '0987654321',
             'phone_number' => '71234567',
+            'active_role'=> 'seller',
         ]);
 
         User::create([
@@ -42,6 +44,7 @@ class UsersSeeder extends Seeder
             'password' => Hash::make('123456'),
             'identification' => '0987654322',
             'phone_number' => '71234567',
+            'active_role'=> 'owner',
         ]);
     }
 }

@@ -15,6 +15,10 @@ class DatabaseSeeder extends Seeder
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
+        DB::table('role_permission')->truncate();
+        DB::table('roles')->truncate();
+        DB::table('permissions')->truncate();
+
         $this->call([
             PlacesSeeder::class,
             UsersSeeder::class,

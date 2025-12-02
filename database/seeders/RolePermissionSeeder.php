@@ -25,19 +25,40 @@ class RolePermissionSeeder extends Seeder
                 'editar_sucursales',
                 'eliminar_sucursales',
                 'ver_productos',
+                'crear_ventas',
+                'editar_ventas',
+                'gestionar_usuarios',
+                'ver_reportes',
+                'crear_usuarios',
+                'update_usuarios',
+                'eliminar_usuarios',
+                'reset_password',
+                'ver_productos_admin',
+                'ver_ventas_admin',
+                'ver_inventario_vendedor',
+                'ver_pagina_vendedor',
             ],
             'admin' => [
+                'ver_dashboard',
+                'ver_productos',
+                'ver_productos_admin',
+                'ver_ventas_admin',
+            ],
+            'seller' => [
+                'ver_dashboard',
+                'ver_productos',
+                'ver_inventario_vendedor',
+                'ver_pagina_vendedor',
+            ],
+            'external_client' => [
                 'ver_productos',
             ],
-            'vendedor' => [
+            'external_seller' => [
                 'ver_productos',
             ],
-            'cliente_externo' => [
+            'external_visitor' => [
                 'ver_productos',
             ],
-            'vendedor_externo' => [
-                'ver_productos',
-            ]
         ];
 
         foreach ($rolePermission as $roleName => $permissionNames) {

@@ -13,6 +13,8 @@ class BatchSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('batches')->truncate();
+
         DB::table('batches')->insert([
             [
                 'id'=> 1,

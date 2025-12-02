@@ -58,14 +58,14 @@ class PermissionsSeeder extends Seeder
             [
                 'module' => 'Ventas',
                 'name' => 'crear_ventas',
-                'description' => 'Permitir crear nuevas ventas',
+                'description' => 'Permitir crear nueva venta',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'module' => 'Ventas',
                 'name' => 'editar_ventas',
-                'description' => 'Permitir editar ventas existentes',
+                'description' => 'Permitir editar ventas',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -103,7 +103,44 @@ class PermissionsSeeder extends Seeder
                 'description' => 'Permitir eliminar usuarios del sistema',
                 'created_at' => now(),
                 'updated_at' => now()
-            ]
-        ]);
-    }
-}
+            ],
+            
+                        [
+                            'module' => 'Settings',
+                            'name' => 'reset_password',
+                            'description' => 'Permitir cambiar el Password',
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ],
+                        [
+                            'module' => 'Productos (Admin)',
+                            'name' => 'ver_productos_admin',
+                            'description' => 'Permitir ver productos (Admin)',
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ],
+                        [
+                            'module' => 'Ventas (Admin)',
+                            'name' => 'ver_ventas_admin',
+                            'description' => 'Permitir ver ventas (Admin)',
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ],
+                        [
+                            'module' => 'Inventario (Seller)',
+                            'name' => 'ver_inventario_vendedor',
+                            'description' => 'Permitir ver inventario (Vendedor)',
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ],
+                        [
+                            'module' => 'Pagina Vendedor',
+                            'name' => 'ver_pagina_vendedor',
+                            'description' => 'Permitir ver la pagina del vendedor',
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]
+                    ]);
+                }
+            }
+            

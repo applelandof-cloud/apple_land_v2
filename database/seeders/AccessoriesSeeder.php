@@ -13,6 +13,8 @@ class AccessoriesSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('accessories')->truncate();
+
         DB::table('accessories')->insert([
             [
                 'stock_id'=> 3,

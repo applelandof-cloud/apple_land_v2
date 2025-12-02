@@ -52,7 +52,9 @@ export function ProductCategorySelection({
             ?.map((selectedCategory) =>
               newAllCategories.find((c) => c.id === selectedCategory.id),
             )
-            .filter((category): category is Category => category !== undefined) || [];
+            .filter(
+              (category): category is Category => category !== undefined,
+            ) || [];
 
         setEditedProduct((prev) => ({
           ...prev,
