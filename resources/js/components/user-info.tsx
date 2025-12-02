@@ -1,13 +1,15 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useInitials } from '@/hooks/use-initials';
-import { type User } from '@/types';
+import { User } from '@/types';
 
 export function UserInfo({
     user,
     showEmail = false,
+    role_name,
 }: {
     user: User;
     showEmail?: boolean;
+    role_name?: string;
 }) {
     const getInitials = useInitials();
 
@@ -21,6 +23,7 @@ export function UserInfo({
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
+                <p className="truncate text-xs font-medium">{role_name}</p>
                 {showEmail && (
                     <span className="truncate text-xs text-muted-foreground">
                         {user.email}

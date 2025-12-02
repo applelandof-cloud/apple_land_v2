@@ -11,7 +11,8 @@
     "require": {
         "php": "^8.2",
         "inertiajs/inertia-laravel": "^2.0",
-        "laravel/fortify": "^1.30",
+        "laravel-lang/lang": "^15.26",
+        "laravel/fortify": "^1.32",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9"
@@ -53,13 +54,13 @@
         ],
         "clear:dev": [
             "Composer\\Config::disableProcessTimeout",
-            "php artisan cache:clear && php artisan config:clear && php artisan event:clear && php artisan optimize:clear && php artisan queue:clear && php artisan route:clear && php artisan route:cache && php artisan view:clear",
+            "php artisan lang:update && php artisan cache:clear && php artisan config:clear && php artisan event:clear && php artisan optimize:clear && php artisan queue:clear && php artisan route:clear && php artisan route:cache && php artisan view:clear",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve --no-reload\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names='server,queue,vite'"
         ],
         "db:seed:clear:dev": [
             "Composer\\Config::disableProcessTimeout",
             "@php artisan migrate:fresh --seed",
-            "php artisan cache:clear && php artisan config:clear && php artisan event:clear && php artisan optimize:clear && php artisan queue:clear && php artisan route:cache && php artisan route:clear && php artisan view:clear",
+            "php artisan lang:update && php artisan cache:clear && php artisan config:clear && php artisan event:clear && php artisan optimize:clear && php artisan queue:clear && php artisan route:cache && php artisan route:clear && php artisan view:clear",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve --no-reload\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names='server,queue,vite'"
         ],
 

@@ -1,10 +1,10 @@
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuTrigger,
-    DropdownMenuSeparator,
-    DropdownMenuLabel,
     DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
     SidebarMenu,
@@ -14,12 +14,18 @@ import {
 } from '@/components/ui/sidebar';
 import { UserInfo } from '@/components/user-info';
 import { UserMenuContent } from '@/components/user-menu-content';
+import { Appearance, LayoutStyle, useAppearance } from '@/hooks/use-appearance';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { type SharedData } from '@/types';
-import { usePage, router } from '@inertiajs/react';
-import { ChevronsUpDown, Monitor, Sun, Moon, LayoutList, LayoutDashboard } from 'lucide-react';
-import { useAppearance, Appearance, LayoutStyle } from '@/hooks/use-appearance';
-
+import { router, usePage } from '@inertiajs/react';
+import {
+    ChevronsUpDown,
+    LayoutDashboard,
+    LayoutList,
+    Monitor,
+    Moon,
+    Sun,
+} from 'lucide-react';
 
 export function NavUser() {
     const { auth } = usePage<SharedData>().props;
@@ -65,26 +71,36 @@ export function NavUser() {
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Theme</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleUpdateAppearance('light')}>
+                        <DropdownMenuItem
+                            onClick={() => handleUpdateAppearance('light')}
+                        >
                             <Sun className="mr-2 h-4 w-4" />
                             <span>Light</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleUpdateAppearance('dark')}>
+                        <DropdownMenuItem
+                            onClick={() => handleUpdateAppearance('dark')}
+                        >
                             <Moon className="mr-2 h-4 w-4" />
                             <span>Dark</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleUpdateAppearance('system')}>
+                        <DropdownMenuItem
+                            onClick={() => handleUpdateAppearance('system')}
+                        >
                             <Monitor className="mr-2 h-4 w-4" />
                             <span>System</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Layout</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleUpdateLayoutStyle('sidebar')}>
+                        <DropdownMenuItem
+                            onClick={() => handleUpdateLayoutStyle('sidebar')}
+                        >
                             <LayoutList className="mr-2 h-4 w-4" />
                             <span>Sidebar</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleUpdateLayoutStyle('header')}>
+                        <DropdownMenuItem
+                            onClick={() => handleUpdateLayoutStyle('header')}
+                        >
                             <LayoutDashboard className="mr-2 h-4 w-4" />
                             <span>Header</span>
                         </DropdownMenuItem>
