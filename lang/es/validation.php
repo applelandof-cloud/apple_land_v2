@@ -155,16 +155,5 @@ return [
     'uppercase'              => 'El campo :attribute debe estar en mayúscula.',
     'url'                    => 'El campo :attribute debe ser una URL válida.',
     'uuid'                   => 'El campo :attribute debe ser un UUID válido.',
-    'attributes'             => [
-        'address'          => 'dirección',
-        'current_password' => 'password actual',
-        'entry_date'       => 'Fecha de ingreso',
-        'expiration_date'  => 'Fecha de expiración',
-        'hex_code'         => 'hex_code',
-        'identification'   => 'identificación',
-        'image'            => 'imagen',
-        'last_name'        => 'apellido',
-        'name'             => 'nombre',
-        'phone_number'     => 'número de teléfono',
-    ],
+    'attributes'             => require __DIR__ .'/attributes.php'
 ];

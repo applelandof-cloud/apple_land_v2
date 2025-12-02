@@ -6,8 +6,6 @@ use App\Http\Controllers\Api\ProductImageController;
 use App\Http\Controllers\Api\ProductTypeController;
 
 Route::get('products', [ProductController::class, 'index']);
-Route::get('products/search', [ProductController::class, 'search']);
-Route::get('products/{product}', [ProductController::class, 'show']);
 Route::post('products', [ProductController::class, 'store']);
 Route::put('products/{product}', [ProductController::class, 'update']);
 Route::post('products/bulk-delete', [ProductController::class, 'bulkDelete']); // New route for bulk delete

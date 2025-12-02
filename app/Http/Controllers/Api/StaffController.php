@@ -66,10 +66,10 @@ class StaffController extends Controller
     public function update(Request $request, User $user)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:50',
-            'last_name' => 'required|string|max:50',
-            'username' => 'required|string|max:50|unique:users,username,' . $user->id,
-            'email' => 'required|string|email|max:100|unique:users,email,' . $user->id,
+            'name' => 'sometimes|string|max:50',
+            'last_name' => 'sometimes|string|max:50',
+            'username' => 'sometimes|string|max:50|unique:users,username,' . $user->id,
+            'email' => 'sometimes|string|email|max:100|unique:users,email,' . $user->id,
             'phone_number' => 'nullable|string|max:20',
             'identification' => 'nullable|string|max:15',
             'roles' => 'sometimes|array',

@@ -35,23 +35,17 @@ export interface Stock {
   product_id: number;
   place_id: number;
   product_type_id: number; // Added product_type_id
-  device_id: number | null;
   device: {
     id: number;
     imei: string;
     imei2: string;
     serial_number: string;
-    storage: string;
   } | null;
-  condition_id: number | null;
-  condition: {
+  tech_accessory: { // Added tech_accessory
     id: number;
-    name: string;
-  } | null;
-  accessory: { // Added tech_accessory
-    id: number;
-    serial_number: string;
+    model_number: string;
     size: string;
+    description: string;
   } | null;
   created_at: string;
   updated_at: string;
@@ -67,8 +61,6 @@ interface InventoryListItemProps {
   isSelected: boolean;
   onSelect: (inventoryId: number, isSelected: boolean) => void;
   onToggleExpand: (inventoryId: number) => void;
-  selectedStockIds: number[];
-  onStockSelect?: (stockId: number, isSelected: boolean) => void;
 }
 
 export const InventoryListItem: React.FC<InventoryListItemProps> = ({
@@ -76,14 +68,12 @@ export const InventoryListItem: React.FC<InventoryListItemProps> = ({
   isSelected,
   onSelect,
   onToggleExpand,
-  selectedStockIds,
-  onStockSelect = () => {},
 }) => {
   return (
     <li key={inventory.id} className="border-b border-border bg-card">
-      <div className="flex items-center p-4 hover:bg-muted/50 gap-4">
+      <div className="flex items-center justify-between p-4 hover:bg-muted/50">
         <Checkbox
-          className="mr-4 border-gray-500"
+          className="mr-4"
           checked={isSelected}
           onCheckedChange={(checked: boolean) =>
             onSelect(inventory.id, checked)
@@ -93,36 +83,28 @@ export const InventoryListItem: React.FC<InventoryListItemProps> = ({
           <img
             src={inventory.product_image_url}
             alt={inventory.product_name}
-            className="h-10 w-10 rounded-md object-cover"
+            className="mr-4 h-10 w-10 rounded-md object-cover"
           />
         )}
-
-        <div className="flex-grow grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-1 items-center">
-            {/* Col 1: Product Name */}
-            <div className="col-span-2 md:col-span-1 text-lg font-medium text-foreground min-w-0 truncate">
-                {inventory.product_name}
+        <div className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
+          <div>
+            <div className="text-lg font-medium text-foreground">
+              {inventory.product_name}
             </div>
-
-            {/* Col 2: Location */}
-            <div className="col-span-2 md:col-span-1 text-sm text-muted-foreground min-w-0 truncate">
-                Ubicación: {inventory.place_name}
-            </div>
-
-            {/* Col 3: Dates */}
-            <div className="text-sm text-muted-foreground">
-                <p>Entrada: {inventory.batch_entry_date}</p>
-                <p>Vencimiento: {inventory.batch_expiration_date || 'N/A'}</p>
-            </div>
-
-            {/* Col 4: Quantity */}
-            <div className="text-right">
-                <span className="text-2xl font-bold text-foreground">
-                    {inventory.count}
-                </span>
-            </div>
+            <p className="text-sm text-muted-foreground">Ubicación: {inventory.place_name}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Entrada: {inventory.batch_entry_date}</p>
+            <p className="text-sm text-muted-foreground">
+              Vencimiento: {inventory.batch_expiration_date || 'N/A'}
+            </p>
+          </div>
         </div>
-
-        {/* Expand Button */}
+        <div className="ml-4 text-right">
+          <span className="text-2xl font-bold text-foreground">
+            {inventory.count}
+          </span>
+        </div>
         <div className="ml-4 flex items-center">
           <button
             onClick={() => onToggleExpand(inventory.id)}
@@ -143,16 +125,9 @@ export const InventoryListItem: React.FC<InventoryListItemProps> = ({
               inventory.stocks.map((stock: Stock) => (
                 <li
                   key={stock.id}
-                  className="flex items-center border-b border-border p-4 pl-8 last:border-b-0"
+                  className="border-b border-border p-4 pl-8 last:border-b-0"
                 >
-                   <Checkbox
-                        className="mr-4 border-gray-500"
-                        checked={selectedStockIds.includes(stock.id)}
-                        onCheckedChange={(checked: boolean) =>
-                          onStockSelect(stock.id, checked)
-                        }
-                      />
-                  <div className="grid flex-grow grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                     {/* Column 1: Device/Accessory Details */}
                     <div>
                       <div className="font-medium text-foreground">Detalles del Producto:</div>
@@ -161,12 +136,12 @@ export const InventoryListItem: React.FC<InventoryListItemProps> = ({
                           <p className="text-muted-foreground">IMEI: {stock.device.imei}</p>
                           <p className="text-muted-foreground">IMEI2: {stock.device.imei2}</p>
                           <p className="text-muted-foreground">Serie: {stock.device.serial_number}</p>
-                          <p className="text-muted-foreground">Almacenamiento: {stock.device.storage}GB</p>
                         </>
-                      ) : stock.product_type_id === 2 && stock.accessory ? ( // Accesorio
+                      ) : stock.product_type_id === 2 && stock.tech_accessory ? ( // Accesorio
                         <>
-                          <p className="text-muted-foreground">Serie: {stock.accessory.serial_number}</p>
-                          <p className="text-muted-foreground">Tamaño: {stock.accessory.size}</p>
+                          <p className="text-muted-foreground">Modelo: {stock.tech_accessory.model_number}</p>
+                          <p className="text-muted-foreground">Tamaño: {stock.tech_accessory.size}</p>
+                          <p className="text-muted-foreground">Descripción: {stock.tech_accessory.description}</p>
                         </>
                       ) : (
                         <p className="text-muted-foreground">N/A</p>
@@ -179,12 +154,11 @@ export const InventoryListItem: React.FC<InventoryListItemProps> = ({
                       {stock.color && <ColorDisplay color={stock.color} />}
                     </div>
 
-                    {/* Column 3: Gift, Visible and Condition */}
+                    {/* Column 3: Gift and Visible */}
                     <div>
                       <div className="font-medium text-foreground">Atributos:</div>
                       <p className="text-muted-foreground">Regalo: {stock.is_gift ? 'Sí' : 'No'}</p>
                       <p className="text-muted-foreground">Visible: {stock.is_visible ? 'Sí' : 'No'}</p>
-                      {stock.condition && <p className="text-muted-foreground">Condición: {stock.condition.name}</p>}
                     </div>
 
                     {/* Column 4: Status */}

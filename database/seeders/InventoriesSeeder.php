@@ -19,14 +19,14 @@ class InventoriesSeeder extends Seeder
                 'product_id' => 1,
                 'batch_id' => 1,
                 'place_id' => 1,
-                'count' => 3, // Two stocks for this combination
+                'count' => 2, // Two stocks for this combination
             ],
             [
                 'id' => 2,
                 'product_id' => 2,
                 'batch_id' => 2,
                 'place_id' => 2,
-                'count' => 2, // One stock for this combination
+                'count' => 1, // One stock for this combination
             ]
         ]);
     }

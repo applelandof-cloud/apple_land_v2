@@ -5,13 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InventoryResource;
 use App\Http\Resources\StockResource;
-use App\Models\Accessory;
 use App\Models\Batch;
 use App\Models\Device;
 use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\Stock;
-use App\Models\DeviceStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,69 +19,57 @@ class InventoryController extends Controller
     {
         $query = Inventory::query();
 
-        $stockFilter = function ($query) use ($request) {
-            $query->with(['color', 'status', 'device', 'accessory', 'product.productType', 'product.techAccessory', 'condition']);
-            if ($request->filled('status_id')) {
-                $query->where('status_id', $request->input('status_id'));
-            }
-            if ($request->filled('product_type_id')) {
-                $query->whereHas('product', function ($q) use ($request) {
-                    $q->where('product_type_id', $request->input('product_type_id'));
-                });
-            }
-        };
-
         if ($request->filled('search')) {
             $searchTerm = $request->input('search');
 
-            $matchingStockIds = Stock::whereHas('device', function ($q) use ($searchTerm) {
+            // Check if the search term matches any device details
+            $matchingStockIds = Stock::whereHas('deviceStock.device', function ($q) use ($searchTerm) {
                 $q->where('imei', 'like', '%' . $searchTerm . '%')
                   ->orWhere('imei2', 'like', '%' . $searchTerm . '%')
                   ->orWhere('serial_number', 'like', '%' . $searchTerm . '%');
-            })->orWhereHas('accessory', function ($q) use ($searchTerm) {
-                $q->where('serial_number', 'like', '%' . $searchTerm . '%');
             })->pluck('id')->toArray();
 
             if (!empty($matchingStockIds)) {
+                // If device details match, filter inventories by these stocks
                 $query->whereHas('stocks', function ($q) use ($matchingStockIds) {
                     $q->whereIn('id', $matchingStockIds);
-                })->with(['product.images', 'batch', 'place', 'stocks' => function ($q) use ($matchingStockIds, $stockFilter) {
-                    $stockFilter($q);
-                    $q->whereIn('id', $matchingStockIds);
+                })->with(['product.images', 'batch', 'place', 'stocks' => function ($q) use ($matchingStockIds) {
+                    $q->whereIn('id', $matchingStockIds)->with(['color', 'status', 'deviceStock.device', 'product.productType', 'product.techAccessory']);
                 }]);
             } else {
+                // Fallback to product name search if no device match
                 $query->whereHas('product', function ($q) use ($searchTerm) {
                     $q->where('name', 'like', '%' . $searchTerm . '%');
-                })->with(['product.images', 'batch', 'place', 'stocks' => $stockFilter]);
+                })->with(['product.images', 'batch', 'place', 'stocks.color', 'stocks.status', 'stocks.deviceStock.device', 'stocks.product.productType', 'stocks.product.techAccessory']);
             }
         } else {
-            $query->with(['product.images', 'batch', 'place', 'stocks' => $stockFilter]);
-        }
-
-        // Advanced Filters
-        if ($request->filled('place_id')) {
-            $query->where('place_id', $request->input('place_id'));
-        }
-
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
-        }
-
-        if ($request->filled('status_id')) {
-            $query->whereHas('stocks', function ($q) use ($request) {
-                $q->where('status_id', $request->input('status_id'));
-            });
-        }
-
-        if ($request->filled('product_type_id')) {
-            $query->whereHas('product', function ($q) use ($request) {
-                $q->where('product_type_id', $request->input('product_type_id'));
-            });
+            // Default eager loading if no search term
+            $query->with(['product.images', 'batch', 'place', 'stocks.color', 'stocks.status', 'stocks.deviceStock.device', 'stocks.product.productType', 'stocks.product.techAccessory']);
         }
 
         $inventories = $query->paginate(10);
 
         return InventoryResource::collection($inventories);
+    }
+
+    public function showStocks(Request $request, Inventory $inventory)
+    {
+        $query = $inventory->stocks()->with(['color', 'status', 'deviceStock.device', 'product.productType', 'product.techAccessory']);
+
+        if ($request->has('search')) {
+            $searchTerm = $request->input('search');
+            $query->where(function ($q) use ($searchTerm) {
+                $q->whereHas('deviceStock.device', function ($q) use ($searchTerm) {
+                    $q->where('imei', 'like', '%' . $searchTerm . '%')
+                      ->orWhere('imei2', 'like', '%' . $searchTerm . '%')
+                      ->orWhere('serial_number', 'like', '%' . $searchTerm . '%');
+                });
+            });
+        }
+
+        $stocks = $query->paginate(10);
+
+        return StockResource::collection($stocks);
     }
 
     public function store(Request $request)
@@ -102,8 +88,6 @@ class InventoryController extends Controller
             'stocks.*.imei2' => 'nullable|string|max:255',
             'stocks.*.serial_number' => 'nullable|string|max:255',
             'stocks.*.storage' => 'nullable|string|max:255',
-            'stocks.*.size' => 'nullable|string|max:255',
-
         ]);
 
         DB::beginTransaction();
@@ -127,9 +111,6 @@ class InventoryController extends Controller
             ]);
 
             foreach ($validatedData['stocks'] as $stockData) {
-                // Initialize device_id to null
-                // $deviceId = null;
-
                 $stock = Stock::create([
                     'inventory_id' => $inventory->id,
                     'product_id' => $validatedData['product_id'],
@@ -140,24 +121,19 @@ class InventoryController extends Controller
                     'status_id' => $stockData['status_id'],
                 ]);
 
-
                 if ($product->product_type_id === 1) { // Device
                     Device::create([
                         'stock_id' => $stock->id,
-                        'imei' => $stockData['imei'] ?? null,
-                        'imei2' => $stockData['imei2'] ?? null,
-                        'serial_number' => $stockData['serial_number'] ?? null,
-                        'storage' => isset($stockData['storage']) ? (int) $stockData['storage'] : null,
+                        'imei' => $stockData['imei'],
+                        'imei2' => $stockData['imei2'],
+                        'serial_number' => $stockData['serial_number'],
+                        'storage' => $stockData['storage'],
+                        'status_id' => $stockData['status_id'],
                     ]);
                 }
-
-                if ($product->product_type_id === 2) { // Accessory
-                    Accessory::create([
-                        'stock_id' => $stock->id,
-                        'serial_number' => $stockData['serial_number'] ?? null,
-                        'size' => $stockData['size'] ?? null,
-                    ]);
-                }
+                // For tech accessories, the user didn't specify fields to create,
+                // so we'll assume they are linked to existing ones or the product itself
+                // and no new TechAccessory record is created here.
             }
 
             DB::commit();

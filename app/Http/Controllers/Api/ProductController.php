@@ -21,7 +21,7 @@ class ProductController extends Controller
             'prices.priceType',
             'categories',
             'colors',
-            'maker', // Changed from 'makers' to 'maker'
+            'makers',
             'images',
             'type'
         ]);
@@ -46,7 +46,6 @@ class ProductController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'product_type_id' => 'required|exists:product_types,id',
-            'maker_id' => 'nullable|exists:makers,id', // Added maker_id validation
         ];
 
         if ($request->input('product_type_id') == 1) {
@@ -55,7 +54,7 @@ class ProductController extends Controller
 
         $request->validate($rules);
 
-        $productData = $request->only(['name', 'product_type_id', 'maker_id']); // Added maker_id
+        $productData = $request->only(['name', 'product_type_id']);
         $productData['is_active'] = true;
 
         $product = Product::create($productData);
@@ -96,7 +95,7 @@ class ProductController extends Controller
             'prices.priceType',
             'categories',
             'colors',
-            'maker', // Changed from 'makers' to 'maker'
+            'makers',
             'images',
             'type'
         ]);
@@ -109,14 +108,9 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        if (!$product || !isset($product->id)) {
-            \Log::warning('Product in update method is missing ID:', ['product' => $product]);
-            return response()->json(['message' => 'Product not found or invalid'], 404);
-        }
         $rules = [
             'name' => 'required|string|max:255',
             'product_type_id' => 'required|exists:product_types,id',
-            'maker_id' => 'nullable|exists:makers,id', // Added maker_id validation
         ];
 
         if ($request->input('product_type_id') == 1) {
@@ -125,7 +119,7 @@ class ProductController extends Controller
 
         $request->validate($rules);
 
-        $product->update($request->only(['name', 'is_active', 'product_type_id', 'maker_id'])); // Added maker_id
+        $product->update($request->only(['name', 'is_active', 'product_type_id']));
 
         if ($request->input('product_type_id') == 1 && $request->has('device_model')) {
             $product->deviceModel()->updateOrCreate(
@@ -188,39 +182,13 @@ class ProductController extends Controller
             'prices.priceType',
             'categories',
             'colors',
-            'maker', // Changed from 'makers' to 'maker'
+            'makers',
             'images',
             'type'
         ]);
 
         return response()->json($product);
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Product $product)
-    {
-        if (!$product || !isset($product->id)) {
-            \Log::warning('Product in show method is missing ID:', ['product' => $product]);
-            return response()->json(['message' => 'Product not found or invalid'], 404);
-        }
-
-        $product->load([
-            'deviceModel',
-            'techAccessory',
-            'productType',
-            'prices.currency',
-            'prices.priceType',
-            'colors',
-            'maker', // Changed from 'makers' to 'maker'
-            'images',
-            'type'
-        ]);
-
-        return response()->json($product);
-    }
-
 
     /**
      * Soft delete multiple products.
@@ -240,19 +208,5 @@ class ProductController extends Controller
     public function showDeviceModel(Product $product)
     {
         return response()->json($product->deviceModel);
-    }
-
-    public function search(Request $request)
-    {
-        $query = Product::with(['images']);
-
-        if ($request->has('q')) {
-            $searchTerm = $request->input('q');
-            $query->where('name', 'like', '%' . $searchTerm . '%');
-        }
-
-        $products = $query->where('is_active', true)->take(10)->get();
-
-        return response()->json($products);
     }
 }

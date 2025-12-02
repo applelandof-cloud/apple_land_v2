@@ -39,10 +39,10 @@ export function ProductListView({
     name,
     device_model,
     tech_accessory,
-    maker, // Changed from makers
     prices,
     categories,
     colors,
+    makers,
     images,
     product_type,
   } = product;
@@ -75,7 +75,7 @@ export function ProductListView({
         <div className="md:col-span-4">
           <h3 className="text-lg font-bold">{name}</h3>
           <p className="text-sm text-muted-foreground">
-            {maker?.name ? `${maker.name} (${maker.origin}) - ` : ''}{product_type?.name}
+            {makers?.map((m) => m.name).join(', ')} - {product_type?.name}
           </p>
           {product.product_type_id === 1 ? (
             <div className="mt-2 flex flex-col gap-1 text-sm text-muted-foreground">

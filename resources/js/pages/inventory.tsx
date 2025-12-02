@@ -8,50 +8,27 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { inventory } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { Boxes, Search, SlidersHorizontal, Pencil, X,Building, CheckCircle, Package } from 'lucide-react';
+import { Boxes, Search, SlidersHorizontal, Pencil } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { InventoryList } from '@/components/inventory/InventoryList';
-import { AddInventoryModal } from '@/components/inventory/AddInventoryModal';
-import { DeleteStockConfirmationModal } from '@/components/inventory/DeleteStockConfirmationModal';
 import {
   InventoryWithStocks,
   Stock,
 } from '@/components/inventory/InventoryListItem'; // Import the interface
-import { useToast } from '@/components/ui/use-toast';
-import axios from 'axios';
+import { AddInventoryModal } from '@/components/inventory/AddInventoryModal';
 
 interface ApiResponse<T> {
   data: T[];
   meta: {
     current_page: number;
     last_page: number;
+    // Add other meta properties if needed
   };
-}
-
-interface Place {
-    id: number;
-    name: string;
-}
-
-interface Status {
-    id: number;
-    name: string;
-}
-
-interface ProductType {
-    id: number;
-    name: string;
+  // Add other top-level API response properties if needed
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -67,48 +44,13 @@ export default function Inventory() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [openAdvancedSearch, setOpenAdvancedSearch] = useState(false);
   const [selectedInventoryIds, setSelectedInventoryIds] = useState<number[]>(
     [],
   );
-  const [selectedStockIds, setSelectedStockIds] = useState<number[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [stocksForDeletion, setStocksForDeletion] = useState<Stock[]>([]);
-  const { toast } = useToast();
-
-  // Advanced search state
-  const [places, setPlaces] = useState<Place[]>([]);
-  const [statuses, setStatuses] = useState<Status[]>([]);
-  const [productTypes, setProductTypes] = useState<ProductType[]>([]);
-  const [selectedPlaceId, setSelectedPlaceId] = useState<string>('');
-  const [selectedStatusId, setSelectedStatusId] = useState<string>('');
-  const [selectedProductTypeId, setSelectedProductTypeId] = useState<string>('');
-  const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
-    const [appliedFilters, setAppliedFilters] = useState<any>({});
-
-
-  useEffect(() => {
-    const fetchFilterData = async () => {
-      try {
-        const [placesRes, statusesRes, productTypesRes] = await Promise.all([
-          axios.get('/api/places'),
-          axios.get('/api/statuses'),
-          axios.get('/api/product-types'),
-        ]);
-        setPlaces(placesRes.data);
-        setStatuses(statusesRes.data);
-        setProductTypes(productTypesRes.data);
-      } catch (err) {
-        console.error('Failed to fetch filter data:', err);
-      }
-    };
-    fetchFilterData();
-  }, []);
 
   const handleInventorySelect = (inventoryId: number, isSelected: boolean) => {
     setSelectedInventoryIds((prevSelected) => {
@@ -120,69 +62,21 @@ export default function Inventory() {
     });
   };
 
-  const handleStockSelect = (stockId: number, isSelected: boolean) => {
-    setSelectedStockIds((prev) => {
-      if (isSelected) {
-        return [...prev, stockId];
-      } else {
-        return prev.filter((id) => id !== stockId);
-      }
-    });
-  };
-
-  const promptDelete = (stockIds: number[]) => {
-    const stocksToDelete = inventories
-      .flatMap((inv) => inv.stocks || [])
-      .filter((stock) => stockIds.includes(stock.id));
-    setStocksForDeletion(stocksToDelete);
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleDeleteSelectedStocks = async () => {
-    setIsDeleteModalOpen(false);
-    try {
-      const response = await axios.delete('/api/stocks', {
-        data: { stock_ids: selectedStockIds },
-      });
-
-      toast({
-        title: '¡Éxito!',
-        description: response.data.message,
-      });
-
-      setSelectedStockIds([]);
-      fetchInventories(currentPage, debouncedSearchTerm, appliedFilters); // Refresh data
-    } catch (err) {
-      toast({
-        title: 'Error',
-        description:
-          (err as any).response?.data?.message || 'Failed to delete stocks.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const fetchInventories = async (page: number = 1, search: string = '', filters: any = {}) => {
+  const fetchInventories = async (page: number = 1, search: string = '') => {
     setLoading(true);
     setError(null);
-    const params = new URLSearchParams({
-        page: page.toString(),
-        search,
-        ...filters
-    });
-
     try {
       const response = await fetch(
-        `/api/inventories?${params.toString()}`,
+        `/api/inventories?page=${page}&search=${search}`,
       );
       if (!response.ok) {
         throw new Error('Failed to fetch inventories');
       }
-      const data: ApiResponse<InventoryWithStocks> = await response.json();
+      const data: ApiResponse<InventoryWithStocks> = await response.json(); // Type the response
       setInventories(
-        data.data.map((inv) => ({
+        data.data.map((inv) => ({ // inv is now correctly typed
           ...inv,
-          expanded: !!search || Object.keys(filters).length > 0,
+          expanded: !!search, // Expand if search term is present
         })),
       );
       setCurrentPage(data.meta.current_page);
@@ -196,68 +90,32 @@ export default function Inventory() {
 
   const fetchStocks = async (inventoryId: number) => {
     try {
-      const response = await axios.get(
-        `/api/stocks?inventory_id=${inventoryId}&search=${debouncedSearchTerm}`,
+      const response = await fetch(
+        `/api/inventories/${inventoryId}/stocks?search=${searchTerm}`,
       );
-      const data: ApiResponse<Stock> = response.data;
+      if (!response.ok) {
+        throw new Error('Failed to fetch stocks');
+      }
+      const data: ApiResponse<Stock> = await response.json(); // Type the response
       setInventories((prevInventories) =>
         prevInventories.map((inv) =>
           inv.id === inventoryId ? { ...inv, stocks: data.data } : inv,
         ),
       );
-    } catch (err: unknown) {
+    } catch (err: unknown) { // More specific error type
       console.error('Error fetching stocks:', err);
-      setError((err as Error).message);
+      setError((err as Error).message); // Set error state
     }
   };
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchTerm]);
-
-
-  useEffect(() => {
-    fetchInventories(currentPage, debouncedSearchTerm, appliedFilters);
-  }, [currentPage, debouncedSearchTerm, appliedFilters]);
+    fetchInventories(currentPage, searchTerm);
+  }, [currentPage, searchTerm]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page on new search
   };
-
-  const handleApplyFilters = () => {
-    const filters: any = {};
-    if (selectedPlaceId) filters.place_id = selectedPlaceId;
-    if (selectedStatusId) filters.status_id = selectedStatusId;
-    if (selectedProductTypeId) filters.product_type_id = selectedProductTypeId;
-    if (startDate) filters.start_date = startDate;
-    if (endDate) filters.end_date = endDate;
-    setAppliedFilters(filters);
-    setCurrentPage(1);
-    setOpenAdvancedSearch(false);
-  };
-
-  const handleClearFilter = (filterKey: string) => {
-    const newFilters = { ...appliedFilters };
-    delete newFilters[filterKey];
-
-    if (filterKey === 'place_id') setSelectedPlaceId('');
-    if (filterKey === 'status_id') setSelectedStatusId('');
-    if (filterKey === 'product_type_id') setSelectedProductTypeId('');
-    if (filterKey === 'start_date') setStartDate('');
-    if (filterKey === 'end_date') setEndDate('');
-
-
-    setAppliedFilters(newFilters);
-    setCurrentPage(1);
-  };
-
 
   const toggleExpand = (inventoryId: number) => {
     setInventories((prevInventories) =>
@@ -288,61 +146,6 @@ export default function Inventory() {
     }
     return <div className="mt-4 flex justify-center">{pages}</div>;
   };
-
-    const renderAppliedFilters = () => {
-        const filtersToRender = [];
-
-        if (appliedFilters.place_id) {
-            const place = places.find(p => p.id.toString() === appliedFilters.place_id);
-            filtersToRender.push({
-                key: 'place_id',
-                label: 'Lugar',
-                value: place?.name,
-                icon: Building
-            });
-        }
-        if (appliedFilters.status_id) {
-            const status = statuses.find(s => s.id.toString() === appliedFilters.status_id);
-            filtersToRender.push({
-                key: 'status_id',
-                label: 'Estado',
-                value: status?.name,
-                icon: CheckCircle
-            });
-        }
-        if (appliedFilters.product_type_id) {
-            const productType = productTypes.find(pt => pt.id.toString() === appliedFilters.product_type_id);
-            filtersToRender.push({
-                key: 'product_type_id',
-                label: 'Tipo',
-                value: productType?.name,
-                icon: Package
-            });
-        }
-        if (appliedFilters.start_date && appliedFilters.end_date) {
-             filtersToRender.push({
-                key: 'date_range',
-                label: 'Date Range',
-                value: `${appliedFilters.start_date} to ${appliedFilters.end_date}`,
-                icon: Package // Replace with a more suitable icon
-            });
-        }
-
-        return (
-            <div className="flex flex-wrap items-center gap-2">
-                {filtersToRender.map(filter => (
-                    <div key={filter.key} className="flex items-center space-x-1 bg-gray-200 rounded-full px-2 py-1 text-sm">
-                        <filter.icon className="h-4 w-4" />
-                        <span>{filter.value}</span>
-                        <button onClick={() => handleClearFilter(filter.key)}>
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                ))}
-            </div>
-        );
-    };
-
 
   return (
     <AppLayout breadcrumbs={breadcrumbs} title="Inventario">
@@ -391,52 +194,26 @@ export default function Inventory() {
                     <div className="grid gap-2">
                       <Label htmlFor="date-range">Rango de Fechas</Label>
                       <div className="grid grid-cols-2 gap-2">
-                        <Input type="date" id="start-date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                        <Input type="date" id="end-date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                        <Input type="date" id="start-date" />
+                        <Input type="date" id="end-date" />
                       </div>
                     </div>
-                     <div className="grid gap-2">
-                        <Label>Lugar</Label>
-                        <Select value={selectedPlaceId} onValueChange={setSelectedPlaceId}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecciona un lugar" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {places.map(place => (
-                                    <SelectItem key={place.id} value={place.id.toString()}>{place.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
                     <div className="grid gap-2">
-                        <Label>Estado</Label>
-                        <Select value={selectedStatusId} onValueChange={setSelectedStatusId}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecciona un estado" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {statuses.map(status => (
-                                    <SelectItem key={status.id} value={status.id.toString()}>{status.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="grid gap-2">
-                        <Label>Tipo de Producto</Label>
-                        <Select value={selectedProductTypeId} onValueChange={setSelectedProductTypeId}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecciona un tipo" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {productTypes.map(type => (
-                                    <SelectItem key={type.id} value={type.id.toString()}>{type.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                      <Label>Otras Opciones</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="option1" />
+                          <Label htmlFor="option1">Opción 1</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="option2" />
+                          <Label htmlFor="option2">Opción 2</Label>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="flex justify-end">
-                    <Button onClick={handleApplyFilters}>
+                    <Button onClick={() => setOpenAdvancedSearch(false)}>
                       Buscar
                     </Button>
                   </div>
@@ -445,6 +222,7 @@ export default function Inventory() {
             </Popover>
           </div>
         </div>
+
         <InventoryList
           inventories={inventories}
           loading={loading}
@@ -453,10 +231,6 @@ export default function Inventory() {
           onSelect={handleInventorySelect}
           onToggleExpand={toggleExpand}
           renderPagination={renderPagination}
-          selectedStockIds={selectedStockIds}
-          onStockSelect={handleStockSelect}
-          onDeleteStocks={promptDelete}
-          renderFilterIcons={renderAppliedFilters}
         />
 
         <FloatingActionButton onClick={() => setIsAddModalOpen(true)} />
@@ -473,13 +247,7 @@ export default function Inventory() {
       <AddInventoryModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onInventoryAdded={() => fetchInventories(currentPage, debouncedSearchTerm, appliedFilters)}
-      />
-      <DeleteStockConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={handleDeleteSelectedStocks}
-        stocks={stocksForDeletion}
+        onInventoryAdded={() => fetchInventories(currentPage, searchTerm)}
       />
     </AppLayout>
   );

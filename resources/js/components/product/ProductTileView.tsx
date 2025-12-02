@@ -30,7 +30,7 @@ export function ProductTileView({
   onSelect,
   isSelected,
 }: ProductTileViewProps) {
-  const { id, name, prices, categories, colors, maker, images, product_type } = product;
+  const { id, name, prices, categories, colors, makers, images, product_type } = product;
 
   return (
     <div
@@ -61,7 +61,7 @@ export function ProductTileView({
           {name}
         </h3>
         <p className="mb-2 text-sm text-muted-foreground">
-          {maker?.name ? `${maker.name} (${maker.origin}) - ` : ''}{product_type?.name}
+          {makers?.map((m) => m.name).join(', ')} - {product_type?.name}
         </p>
 
         <div className="mb-4 flex flex-wrap gap-1">

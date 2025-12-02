@@ -148,15 +148,4 @@
     body {
         @apply bg-background text-foreground;
     }
-
-    /* Custom pulse animation for new form item */
-    @keyframes pulse-animation {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.01); }
-        100% { transform: scale(1); }
-    }
-
-    .animate-pulse-once {
-        animation: pulse-animation 1s ease-in-out;
-    }
 }

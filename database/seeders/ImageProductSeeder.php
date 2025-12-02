@@ -30,10 +30,6 @@ class ImageProductSeeder extends Seeder
                 'image_id' => 4,
                 'product_id' => 4,
             ],
-            [
-                'image_id' => 5,
-                'product_id' => 5,
-            ],
         ]);
     }
 }

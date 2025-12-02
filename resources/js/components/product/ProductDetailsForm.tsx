@@ -16,7 +16,7 @@ export function ProductDetailsForm({
   allProductTypes,
 }: ProductDetailsFormProps) {
   return (
-    <div className="flex flex-col gap-2"> {/* Added wrapper div with reduced gap */}
+    <>
       <EditableField label="Nombre del Producto" htmlFor="product-name">
         <Input
           id="product-name"
@@ -105,6 +105,6 @@ export function ProductDetailsForm({
           }
         />
       )}
-    </div>
+    </>
   );
 }

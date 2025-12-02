@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->boolean('is_active')->default(true);
             $table->foreignId('product_type_id')->constrained('product_types')->cascadeOnDelete();
-            $table->foreignId('maker_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
         });
     }

@@ -19,33 +19,19 @@ class DeviceModelsSeeder extends Seeder
                 'model_number' => 'SM-G998',
                 'sku' => 'note8',
                 'sim' => 'SIM',
-                'storage'=> '512GB',
             ],
             [
                 'product_id' => 2,
                 'model_number' => 'SM-S918',
                 'sku' => 's23ultra',
                 'sim' => 'eSIM',
-                'storage'=> '128GB',
-
             ],
             [
                 'product_id' => 3,
                 'model_number' => 'SM-S921B',
                 'sku' => 's24normal',
                 'sim' => 'eSIM',
-                'storage'=> '256GB',
-
-            ],
-            [
-                'product_id' => 4,
-                'model_number' => 'A3090',
-                'sku' => 'O20332DQ4t',
-                'sim' => 'eSIM',
-                'storage'=> '512GB',
-
             ]
-
         ]);
     }
 }
