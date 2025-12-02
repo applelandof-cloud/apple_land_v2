@@ -2,7 +2,6 @@
 
 namespace App\Exceptions;
 
-use App\Exceptions\DuplicateEntryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -24,15 +23,6 @@ class ApiExceptionHandler
     {
         if ($request->is('api/*') || $request->wantsJson()) {
             if ($exception instanceof QueryException) {
-
-                $sqlState   = $exception->errorInfo[0];
-                $driverCode = $exception->errorInfo[1];
-
-                $isDuplicate = ($sqlState === "23000" && $driverCode == 1062);
-
-                if ($isDuplicate) {
-                    throw new DuplicateEntryException();
-                }
 
                 Log::channel('db_errors')->error('Database QueryException', [
                     'message'  => $exception->getMessage(),

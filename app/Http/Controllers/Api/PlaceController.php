@@ -33,7 +33,7 @@ class PlaceController extends Controller
     public function update(Request $request, Place $place)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:100',
             'address' => 'required|string|max:255',
         ]);
 
@@ -51,8 +51,6 @@ class PlaceController extends Controller
     {
         $place->delete();
 
-        return response()->json([
-            'message' => 'Place deleted successfully'
-        ]);
+        return response()->json(null, 204);
     }
 }

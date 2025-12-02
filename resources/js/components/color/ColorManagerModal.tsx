@@ -81,7 +81,7 @@ export function ColorManagerModal({ open, onClose }: ColorManagerModalProps) {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this color?')) {
+    if (!confirm('Estas seguro que deseas eliminar este elemento?')) {
       return;
     }
 
@@ -115,6 +115,7 @@ export function ColorManagerModal({ open, onClose }: ColorManagerModalProps) {
                 placeholder="Nombre Color (e.g. Verde)"
                 value={editingColor.name || ''}
                 onChange={handleEditingColorChange}
+                className={validationErrors.name ? 'border-red-500' : ''}
               />
               {validationErrors.name && (
                 <p className="mt-1 text-sm text-destructive">
@@ -128,6 +129,7 @@ export function ColorManagerModal({ open, onClose }: ColorManagerModalProps) {
                 placeholder="#RRGGBB"
                 value={editingColor.hex_code || ''}
                 onChange={handleEditingColorChange}
+                className={validationErrors.hex_code ? 'border-red-500' : ''}
               />
               {validationErrors.hex_code && (
                 <p className="mt-1 text-sm text-destructive">

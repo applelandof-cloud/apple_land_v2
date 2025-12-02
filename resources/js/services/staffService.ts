@@ -1,5 +1,10 @@
-import type { User, Role, Place } from '@/types';
+import type { Place, Role, User } from '@/types';
+import { isAxiosError } from 'axios';
 import apiClient from './apiClient';
+
+interface ValidationErrors {
+    [key: string]: string[];
+}
 
 export interface StaffApiResponse {
     users: User[];
@@ -11,8 +16,12 @@ export interface StaffApiResponse {
  * Fetch users based on their status.
  * @param status - 'active' or 'inactive'
  */
-export const getStaff = (status: 'active' | 'inactive'): Promise<StaffApiResponse> => {
-    return apiClient.get<StaffApiResponse>(`/staff?status=${status}`).then(res => res.data);
+export const getStaff = (
+    status: 'active' | 'inactive',
+): Promise<StaffApiResponse> => {
+    return apiClient
+        .get<StaffApiResponse>(`/staff?status=${status}`)
+        .then((res) => res.data);
 };
 
 /**
@@ -20,8 +29,13 @@ export const getStaff = (status: 'active' | 'inactive'): Promise<StaffApiRespons
  * @param query - The search term.
  * @param status - 'active' or 'inactive'
  */
-export const searchStaff = (query: string, status: 'active' | 'inactive'): Promise<User[]> => {
-    return apiClient.get<User[]>(`/staff/search?query=${query}&status=${status}`).then(res => res.data);
+export const searchStaff = (
+    query: string,
+    status: 'active' | 'inactive',
+): Promise<User[]> => {
+    return apiClient
+        .get<User[]>(`/staff/search?query=${query}&status=${status}`)
+        .then((res) => res.data);
 };
 
 /**
@@ -29,16 +43,25 @@ export const searchStaff = (query: string, status: 'active' | 'inactive'): Promi
  * @param userId - The ID of the user to update.
  * @param userData - The partial user data to update.
  */
-export const updateStaff = (userId: number, userData: Partial<User>): Promise<User> => {
-    return apiClient.patch<User>(`/staff/${userId}`, userData).then(res => res.data);
+export const updateStaff = (
+    userId: number,
+    userData: Partial<User>,
+): Promise<User> => {
+    return apiClient
+        .patch<User>(`/staff/${userId}`, userData)
+        .then((res) => res.data);
 };
 
 /**
  * Update a user's data.
  * @param userData - The user data to create.
  */
-export const createStaff = (userData: Partial<User>): Promise<{ users: User }> => {
-    return apiClient.post<{ users: User }>(`/staff`, userData).then(res => res.data);
+export const createStaff = (
+    userData: Partial<User>,
+): Promise<{ users: User }> => {
+    return apiClient
+        .post<{ users: User }>(`/staff`, userData)
+        .then((res) => res.data);
 };
 
 /**
@@ -47,4 +70,40 @@ export const createStaff = (userData: Partial<User>): Promise<{ users: User }> =
  */
 export const deleteStaff = (ids: number[]): Promise<void> => {
     return apiClient.delete('/staff', { data: { ids } });
+};
+
+/**
+ * Update a staff member's password.
+ * @param userId - The ID of the staff member to update.
+ * @param password - The new password.
+ * @param passwordConfirmation - The password confirmation.
+ */
+export const updateStaffPassword = async (
+    userId: number,
+    password: string,
+    passwordConfirmation: string,
+): Promise<{
+    success?: boolean;
+    errors?: ValidationErrors;
+    message?: string;
+    error?: string;
+}> => {
+    try {
+        await apiClient.patch(`/staff/${userId}/password`, {
+            password,
+            password_confirmation: passwordConfirmation,
+        });
+        return { success: true };
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            if (error.response.status === 422) {
+                return { errors: error.response.data.errors };
+            }
+            return {
+                message: error.response.data.message,
+                error: error.response.data.error,
+            };
+        }
+        throw error;
+    }
 };
