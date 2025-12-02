@@ -11,8 +11,11 @@ class Product extends Model
         'name',
         'is_active',
         'product_type_id',
-        'maker_id', // Added maker_id to fillable
+        'maker_id',
     ];
+
+    protected $with = ['productType'];
+    protected $appends = ['primary_image_url'];
 
     public function deviceModel()
     {
@@ -39,9 +42,8 @@ class Product extends Model
         return $this->belongsToMany(Color::class, 'color_product');
     }
 
-    // Removed the old makers (belongsToMany) relationship
 
-    public function maker() // New belongsTo relationship
+    public function maker()
     {
         return $this->belongsTo(Maker::class);
     }
@@ -50,6 +52,20 @@ class Product extends Model
     {
         return $this->belongsToMany(Image::class, 'image_product');
     }
+
+    public function getPrimaryImageUrlAttribute(): string
+    {
+        if ($this->images->isNotEmpty()) {
+            return $this->images->first()->url;
+        }
+
+        if ($this->productType && $this->productType->id === 2) {
+            return asset('placeholders/accessory.webp');
+        }
+
+        return asset('placeholders/phone.webp');
+    }
+    
 
     public function type()
     {

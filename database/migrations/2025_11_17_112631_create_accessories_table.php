@@ -12,10 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('accessories', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('stock_id')->constrained('stocks');
+            $table->unsignedBigInteger('stock_id');
+            $table->foreign('stock_id')->references('id')->on('stocks')->onDelete('cascade');
+            $table->primary('stock_id');
             $table->string('serial_number')->unique()->nullable();
             $table->string('size')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use Throwable;
+use Illuminate\Validation\ValidationException;
 
 class ApiExceptionHandler
 {
@@ -77,6 +78,7 @@ class ApiExceptionHandler
                     'error'   => class_basename($exception),
                 ], $exception->getStatusCode());
             }
+
         }
     }
 }

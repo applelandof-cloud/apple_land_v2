@@ -1,7 +1,7 @@
 import { ColorManagerModal } from '@/components/color/ColorManagerModal';
+import { MultiSelectDropdown } from '@/components/custom/MultiSelectDropdown';
 import { EditableField } from '@/components/EditableField';
 import { Button } from '@/components/ui/button';
-import { MultiSelectDropdown } from '@/components/custom/MultiSelectDropdown';
 import { Color, Product } from '@/types';
 import { Pencil } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
@@ -14,6 +14,7 @@ interface ProductColorSelectionProps {
   allColors: Color[];
   setAllColors: (colors: Color[]) => void; // This is the local setter for allColors in ProductForm
   setAllColorsInParent: (colors: Color[]) => void; // This is the setter from ProductsPage
+  apiErrors?: Record<string, string[]>;
 }
 
 export function ProductColorSelection({

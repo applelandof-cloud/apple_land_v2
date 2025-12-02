@@ -58,7 +58,7 @@ class Stock extends Model
 
     public function accessory()
     {
-        return $this->hasOne(Accessory::class);
+        return $this->hasOne(Accessory::class, 'stock_id', 'id');
     }
     public function condition()
     {

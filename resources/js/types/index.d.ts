@@ -106,6 +106,7 @@ export interface Product {
     type: Type;
     product_type: ProductType;
     categories: Category[];
+    primary_image_url: string;
 }
 
 export interface SharedData {

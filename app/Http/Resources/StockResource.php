@@ -42,6 +42,7 @@ class StockResource extends JsonResource
                     'id' => $this->accessory->id,
                     'serial_number' => $this->accessory->serial_number,
                     'size' => $this->accessory->size,
+                    'description' => $this->accessory->description,
                 ] : null;
             }),
             'device' => $this->whenLoaded('device', function () {

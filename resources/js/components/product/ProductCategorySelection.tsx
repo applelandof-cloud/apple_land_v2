@@ -18,6 +18,7 @@ interface ProductCategorySelectionProps {
   >;
   allCategories: Category[];
   setAllCategories: (categories: Category[]) => void;
+  apiErrors?: Record<string, string[]>;
 }
 
 export function ProductCategorySelection({
@@ -52,7 +53,9 @@ export function ProductCategorySelection({
             ?.map((selectedCategory) =>
               newAllCategories.find((c) => c.id === selectedCategory.id),
             )
-            .filter((category): category is Category => category !== undefined) || [];
+            .filter(
+              (category): category is Category => category !== undefined,
+            ) || [];
 
         setEditedProduct((prev) => ({
           ...prev,

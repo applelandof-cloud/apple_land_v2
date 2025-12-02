@@ -1,5 +1,11 @@
+import { AddInventoryModal } from '@/components/inventory/AddInventoryModal';
+import { DeleteStockConfirmationModal } from '@/components/inventory/DeleteStockConfirmationModal';
+import { InventoryList } from '@/components/inventory/InventoryList';
+import {
+  InventoryWithStocks,
+  Stock,
+} from '@/components/inventory/InventoryListItem'; // Import the interface
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,27 +15,31 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
+import { useToast } from '@/components/ui/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { inventory } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { Boxes, Search, SlidersHorizontal, Pencil, X,Building, CheckCircle, Package } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import { InventoryList } from '@/components/inventory/InventoryList';
-import { AddInventoryModal } from '@/components/inventory/AddInventoryModal';
-import { DeleteStockConfirmationModal } from '@/components/inventory/DeleteStockConfirmationModal';
-import {
-  InventoryWithStocks,
-  Stock,
-} from '@/components/inventory/InventoryListItem'; // Import the interface
-import { useToast } from '@/components/ui/use-toast';
 import axios from 'axios';
+import {
+  Boxes,
+  Building,
+  CheckCircle,
+  Package,
+  Pencil,
+  Search,
+  SlidersHorizontal,
+  X,
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface ApiResponse<T> {
   data: T[];
@@ -40,18 +50,27 @@ interface ApiResponse<T> {
 }
 
 interface Place {
-    id: number;
-    name: string;
+  id: number;
+  name: string;
 }
 
 interface Status {
-    id: number;
-    name: string;
+  id: number;
+  name: string;
 }
 
 interface ProductType {
-    id: number;
-    name: string;
+  id: number;
+  name: string;
+}
+
+interface InventoryFilters {
+  place_id?: string;
+  status_id?: string;
+  product_type_id?: string;
+  start_date?: string;
+  end_date?: string;
+  [key: string]: string | undefined;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -86,11 +105,11 @@ export default function Inventory() {
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string>('');
   const [selectedStatusId, setSelectedStatusId] = useState<string>('');
-  const [selectedProductTypeId, setSelectedProductTypeId] = useState<string>('');
+  const [selectedProductTypeId, setSelectedProductTypeId] =
+    useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
-    const [appliedFilters, setAppliedFilters] = useState<any>({});
-
+  const [appliedFilters, setAppliedFilters] = useState<InventoryFilters>({});
 
   useEffect(() => {
     const fetchFilterData = async () => {
@@ -162,19 +181,28 @@ export default function Inventory() {
     }
   };
 
-  const fetchInventories = async (page: number = 1, search: string = '', filters: any = {}) => {
+  const fetchInventories = async (
+    page: number = 1,
+    search: string = '',
+    filters: InventoryFilters = {},
+  ) => {
     setLoading(true);
     setError(null);
+    const filterParams: Record<string, string> = {};
+    for (const [key, value] of Object.entries(filters)) {
+      if (typeof value === 'string') {
+        filterParams[key] = value;
+      }
+    }
+
     const params = new URLSearchParams({
-        page: page.toString(),
-        search,
-        ...filters
+      page: page.toString(),
+      search,
+      ...filterParams,
     });
 
     try {
-      const response = await fetch(
-        `/api/inventories?${params.toString()}`,
-      );
+      const response = await fetch(`/api/inventories?${params.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch inventories');
       }
@@ -221,7 +249,6 @@ export default function Inventory() {
     };
   }, [searchTerm]);
 
-
   useEffect(() => {
     fetchInventories(currentPage, debouncedSearchTerm, appliedFilters);
   }, [currentPage, debouncedSearchTerm, appliedFilters]);
@@ -232,7 +259,7 @@ export default function Inventory() {
   };
 
   const handleApplyFilters = () => {
-    const filters: any = {};
+    const filters: InventoryFilters = {};
     if (selectedPlaceId) filters.place_id = selectedPlaceId;
     if (selectedStatusId) filters.status_id = selectedStatusId;
     if (selectedProductTypeId) filters.product_type_id = selectedProductTypeId;
@@ -253,11 +280,9 @@ export default function Inventory() {
     if (filterKey === 'start_date') setStartDate('');
     if (filterKey === 'end_date') setEndDate('');
 
-
     setAppliedFilters(newFilters);
     setCurrentPage(1);
   };
-
 
   const toggleExpand = (inventoryId: number) => {
     setInventories((prevInventories) =>
@@ -279,7 +304,9 @@ export default function Inventory() {
           key={i}
           onClick={() => setCurrentPage(i)}
           className={`mx-1 rounded px-3 py-1 ${
-            currentPage === i ? 'bg-primary text-primary-foreground' : 'bg-muted'
+            currentPage === i
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted'
           }`}
         >
           {i}
@@ -289,60 +316,74 @@ export default function Inventory() {
     return <div className="mt-4 flex justify-center">{pages}</div>;
   };
 
-    const renderAppliedFilters = () => {
-        const filtersToRender = [];
+  const renderAppliedFilters = () => {
+    const filtersToRender = [];
 
-        if (appliedFilters.place_id) {
-            const place = places.find(p => p.id.toString() === appliedFilters.place_id);
-            filtersToRender.push({
-                key: 'place_id',
-                label: 'Lugar',
-                value: place?.name,
-                icon: Building
-            });
-        }
-        if (appliedFilters.status_id) {
-            const status = statuses.find(s => s.id.toString() === appliedFilters.status_id);
-            filtersToRender.push({
-                key: 'status_id',
-                label: 'Estado',
-                value: status?.name,
-                icon: CheckCircle
-            });
-        }
-        if (appliedFilters.product_type_id) {
-            const productType = productTypes.find(pt => pt.id.toString() === appliedFilters.product_type_id);
-            filtersToRender.push({
-                key: 'product_type_id',
-                label: 'Tipo',
-                value: productType?.name,
-                icon: Package
-            });
-        }
-        if (appliedFilters.start_date && appliedFilters.end_date) {
-             filtersToRender.push({
-                key: 'date_range',
-                label: 'Date Range',
-                value: `${appliedFilters.start_date} to ${appliedFilters.end_date}`,
-                icon: Package // Replace with a more suitable icon
-            });
-        }
+    if (appliedFilters.place_id) {
+      const place = places.find(
+        (p) => p.id.toString() === appliedFilters.place_id,
+      );
+      filtersToRender.push({
+        key: 'place_id',
+        label: 'Lugar',
+        value: place?.name,
+        icon: Building,
+      });
+    }
+    if (appliedFilters.status_id) {
+      const status = statuses.find(
+        (s) => s.id.toString() === appliedFilters.status_id,
+      );
+      filtersToRender.push({
+        key: 'status_id',
+        label: 'Estado',
+        value: status?.name,
+        icon: CheckCircle,
+      });
+    }
+    if (appliedFilters.product_type_id) {
+      const productType = productTypes.find(
+        (pt) => pt.id.toString() === appliedFilters.product_type_id,
+      );
+      filtersToRender.push({
+        key: 'product_type_id',
+        label: 'Tipo',
+        value: productType?.name,
+        icon: Package,
+      });
+    }
+    if (appliedFilters.start_date && appliedFilters.end_date) {
+      filtersToRender.push({
+        key: 'date_range',
+        label: 'Date Range',
+        value: `${appliedFilters.start_date} to ${appliedFilters.end_date}`,
+        icon: Package, // Replace with a more suitable icon
+      });
+    }
 
-        return (
-            <div className="flex flex-wrap items-center gap-2">
-                {filtersToRender.map(filter => (
-                    <div key={filter.key} className="flex items-center space-x-1 bg-gray-200 rounded-full px-2 py-1 text-sm">
-                        <filter.icon className="h-4 w-4" />
-                        <span>{filter.value}</span>
-                        <button onClick={() => handleClearFilter(filter.key)}>
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                ))}
-            </div>
-        );
-    };
+    return (
+      <div className="flex flex-wrap items-center gap-2">
+        {filtersToRender.map((filter) => (
+          <div
+            key={filter.key}
+            className="flex items-center space-x-1 rounded-full bg-muted px-2 py-1 text-sm text-muted-foreground"
+          >
+            <filter.icon className="h-4 w-4" />
+            <span>{filter.value}</span>
+            <button
+              onClick={() => handleClearFilter(filter.key)}
+              className="-mr-1 ml-1"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
+  const isSearching =
+    debouncedSearchTerm !== '' || Object.keys(appliedFilters).length > 0;
 
   return (
     <AppLayout breadcrumbs={breadcrumbs} title="Inventario">
@@ -352,7 +393,7 @@ export default function Inventory() {
           <h1 className="hidden text-2xl font-bold sm:block">Inventario</h1>
           <div className="mt-4 flex w-full items-center space-x-1 sm:mt-0 sm:w-auto">
             <div className="relative flex-grow">
-              <Search className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute top-1/2 left-3 size-5 -translate-y-1/2 text-gray-400" />
               <Input
                 placeholder="Search by product name, IMEI, or serial number..."
                 className="w-full rounded-md border py-2 pr-4 pl-10"
@@ -380,7 +421,7 @@ export default function Inventory() {
               >
                 <div className="grid gap-4">
                   <div className="space-y-2">
-                    <h4 className="font-medium leading-none">
+                    <h4 className="leading-none font-medium">
                       Búsqueda Avanzada
                     </h4>
                     <p className="text-sm text-muted-foreground">
@@ -391,54 +432,86 @@ export default function Inventory() {
                     <div className="grid gap-2">
                       <Label htmlFor="date-range">Rango de Fechas</Label>
                       <div className="grid grid-cols-2 gap-2">
-                        <Input type="date" id="start-date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                        <Input type="date" id="end-date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                        <Input
+                          type="date"
+                          id="start-date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                        />
+                        <Input
+                          type="date"
+                          id="end-date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                        />
                       </div>
                     </div>
-                     <div className="grid gap-2">
-                        <Label>Lugar</Label>
-                        <Select value={selectedPlaceId} onValueChange={setSelectedPlaceId}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecciona un lugar" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {places.map(place => (
-                                    <SelectItem key={place.id} value={place.id.toString()}>{place.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                    <div className="grid gap-2">
+                      <Label>Lugar</Label>
+                      <Select
+                        value={selectedPlaceId}
+                        onValueChange={setSelectedPlaceId}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona un lugar" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {places.map((place) => (
+                            <SelectItem
+                              key={place.id}
+                              value={place.id.toString()}
+                            >
+                              {place.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="grid gap-2">
-                        <Label>Estado</Label>
-                        <Select value={selectedStatusId} onValueChange={setSelectedStatusId}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecciona un estado" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {statuses.map(status => (
-                                    <SelectItem key={status.id} value={status.id.toString()}>{status.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                      <Label>Estado</Label>
+                      <Select
+                        value={selectedStatusId}
+                        onValueChange={setSelectedStatusId}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona un estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {statuses.map((status) => (
+                            <SelectItem
+                              key={status.id}
+                              value={status.id.toString()}
+                            >
+                              {status.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="grid gap-2">
-                        <Label>Tipo de Producto</Label>
-                        <Select value={selectedProductTypeId} onValueChange={setSelectedProductTypeId}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecciona un tipo" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {productTypes.map(type => (
-                                    <SelectItem key={type.id} value={type.id.toString()}>{type.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                      <Label>Tipo de Producto</Label>
+                      <Select
+                        value={selectedProductTypeId}
+                        onValueChange={setSelectedProductTypeId}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona un tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {productTypes.map((type) => (
+                            <SelectItem
+                              key={type.id}
+                              value={type.id.toString()}
+                            >
+                              {type.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   <div className="flex justify-end">
-                    <Button onClick={handleApplyFilters}>
-                      Buscar
-                    </Button>
+                    <Button onClick={handleApplyFilters}>Buscar</Button>
                   </div>
                 </div>
               </PopoverContent>
@@ -457,6 +530,7 @@ export default function Inventory() {
           onStockSelect={handleStockSelect}
           onDeleteStocks={promptDelete}
           renderFilterIcons={renderAppliedFilters}
+          isSearching={isSearching}
         />
 
         <FloatingActionButton onClick={() => setIsAddModalOpen(true)} />
@@ -473,7 +547,9 @@ export default function Inventory() {
       <AddInventoryModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onInventoryAdded={() => fetchInventories(currentPage, debouncedSearchTerm, appliedFilters)}
+        onInventoryAdded={() =>
+          fetchInventories(currentPage, debouncedSearchTerm, appliedFilters)
+        }
       />
       <DeleteStockConfirmationModal
         isOpen={isDeleteModalOpen}

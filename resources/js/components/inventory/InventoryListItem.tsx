@@ -48,10 +48,11 @@ export interface Stock {
     id: number;
     name: string;
   } | null;
-  accessory: { // Added tech_accessory
+  accessory: {
     id: number;
     serial_number: string;
     size: string;
+    description: string;
   } | null;
   created_at: string;
   updated_at: string;
@@ -69,6 +70,7 @@ interface InventoryListItemProps {
   onToggleExpand: (inventoryId: number) => void;
   selectedStockIds: number[];
   onStockSelect?: (stockId: number, isSelected: boolean) => void;
+  isSearching?: boolean;
 }
 
 export const InventoryListItem: React.FC<InventoryListItemProps> = ({
@@ -78,6 +80,7 @@ export const InventoryListItem: React.FC<InventoryListItemProps> = ({
   onToggleExpand,
   selectedStockIds,
   onStockSelect = () => {},
+  isSearching,
 }) => {
   return (
     <li key={inventory.id} className="border-b border-border bg-card">
@@ -116,9 +119,13 @@ export const InventoryListItem: React.FC<InventoryListItemProps> = ({
 
             {/* Col 4: Quantity */}
             <div className="text-right">
-                <span className="text-2xl font-bold text-foreground">
-                    {inventory.count}
-                </span>
+                {!isSearching ? (
+                    <span className="text-2xl font-bold text-foreground">
+                        {inventory.count}
+                    </span>
+                ) : (
+                    <div className="w-5 h-5" />
+                )}
             </div>
         </div>
 
@@ -167,6 +174,7 @@ export const InventoryListItem: React.FC<InventoryListItemProps> = ({
                         <>
                           <p className="text-muted-foreground">Serie: {stock.accessory.serial_number}</p>
                           <p className="text-muted-foreground">Tamaño: {stock.accessory.size}</p>
+                          <p className="text-muted-foreground">Descripción: {stock.accessory.description}</p>
                         </>
                       ) : (
                         <p className="text-muted-foreground">N/A</p>

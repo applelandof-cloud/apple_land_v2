@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import React from 'react';
 import {
   AddInventoryFormData,
@@ -115,6 +116,19 @@ export const StockDetailsStep: React.FC<StockDetailsStepProps> = ({
                     onChange={(e) =>
                       handleStockChange(index, 'size', e.target.value)
                     }
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`description_${index}`} className="pt-2">
+                    Descripción
+                  </Label>
+                  <Textarea
+                    id={`description_${index}`}
+                    value={stock.description}
+                    onChange={(e) =>
+                      handleStockChange(index, 'description', e.target.value)
+                    }
+                    className="h-10 resize-none"
                   />
                 </div>
               </>

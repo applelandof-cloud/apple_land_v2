@@ -46,6 +46,7 @@ export interface TechAccessory {
 export interface Accessory {
   serial_number: string;
   size: string;
+  description?: string;
 }
 
 export interface Device{
