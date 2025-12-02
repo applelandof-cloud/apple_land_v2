@@ -7,62 +7,87 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useCustomToast } from '@/hooks/use-custom-toast';
+import {
+  deleteCategory,
+  getCategories,
+  saveCategory,
+} from '@/services/categoryService';
 import { Category } from '@/types';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
+
+interface ValidationErrors {
+  [key: string]: string[];
+}
 
 interface CategoryManagerModalProps {
   open: boolean;
   onClose: (needsUpdate: boolean) => void;
 }
 
-export function CategoryManagerModal({ open, onClose }: CategoryManagerModalProps) {
+export function CategoryManagerModal({
+  open,
+  onClose,
+}: CategoryManagerModalProps) {
+  const { showSuccessToast, showErrorToast } = useCustomToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingCategory, setEditingCategory] = useState<Partial<Category>>({
     name: '',
   });
   const [hasChanged, setHasChanged] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
+    {},
+  );
 
   const fetchCategories = useCallback(async () => {
-    try {
-      const response = await axios.get('/api/categories');
-      setCategories(response.data.categories);
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
-    }
+    const categories = await getCategories();
+    setCategories(categories);
   }, []);
 
   useEffect(() => {
     if (open) {
-      fetchCategories();
+      (async () => {
+        await fetchCategories();
+      })();
     }
   }, [open, fetchCategories]);
 
-  const handleSave = async () => {
-    const method = editingCategory.id ? 'PUT' : 'POST';
-    const url = editingCategory.id
-      ? `/api/categories/${editingCategory.id}`
-      : '/api/categories';
-
-    try {
-      const response = await axios({
-        method,
-        url,
-        data: {
-          name: editingCategory.name,
-        },
+  const handleEditingCategoryChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const { name, value } = e.target;
+    setEditingCategory((prev) => ({ ...prev, [name]: value }));
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
       });
+    }
+  };
 
-      if (response.status === 200 || response.status === 201) {
-        setEditingCategory({ name: '' });
-        fetchCategories();
-        setHasChanged(true);
-      } else {
-        console.error('Failed to save category');
-      }
-    } catch (error) {
-      console.error('Failed to save category:', error);
+  const handleSave = async () => {
+    setValidationErrors({});
+
+    const data = {
+      id: editingCategory.id,
+      name: editingCategory.name,
+    };
+
+    const result = await saveCategory(data);
+    if (result && 'errors' in result && result.errors) {
+      setValidationErrors(result.errors);
+    } else if (result && 'message' in result && result.message) {
+      showErrorToast(result.message, result.error || 'Error del Servidor');
+    } else {
+      setEditingCategory({ name: '' });
+      await fetchCategories();
+      setHasChanged(true);
+      showSuccessToast(
+        'Categoría guardada exitosamente.',
+        'Categoría guardada',
+      );
     }
   };
 
@@ -72,15 +97,15 @@ export function CategoryManagerModal({ open, onClose }: CategoryManagerModalProp
     }
 
     try {
-      const response = await axios.delete(`/api/categories/${id}`);
-
-      if (response.status === 204) {
-        fetchCategories();
-        setHasChanged(true);
-      } else {
-        console.error('Failed to delete category');
-      }
+      await deleteCategory(id);
+      await fetchCategories();
+      setHasChanged(true);
+      showSuccessToast(
+        'Categoría ha sido eliminado exitosamente.',
+        'Categoría eliminada',
+      );
     } catch (error) {
+      showErrorToast('Error al eliminar la categoría.', 'Error de Eliminación');
       console.error('Failed to delete category:', error);
     }
   };
@@ -89,6 +114,7 @@ export function CategoryManagerModal({ open, onClose }: CategoryManagerModalProp
     onClose(hasChanged);
     setHasChanged(false);
     setEditingCategory({ name: '' });
+    setValidationErrors({});
   };
 
   return (
@@ -98,25 +124,37 @@ export function CategoryManagerModal({ open, onClose }: CategoryManagerModalProp
           <DialogTitle>Categories</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          <div className="flex items-center gap-2 rounded-lg border p-2">
-            <Input
-              placeholder="Nombre Categoria (e.g. Laptops)"
-              value={editingCategory.name || ''}
-              onChange={(e) =>
-                setEditingCategory({ ...editingCategory, name: e.target.value })
-              }
-            />
-            <Button onClick={handleSave}>
-              {editingCategory.id ? 'Actualizar' : 'Agregar'}
-            </Button>
-            {editingCategory.id && (
-              <Button
-                variant="ghost"
-                onClick={() => setEditingCategory({ name: '' })}
-              >
-                Cancelar
+          <div className="rounded-lg border p-2">
+            <div className="flex items-start gap-2">
+              <div className="w-full">
+                <Input
+                  name="name"
+                  placeholder="Nombre Categoria (e.g. Laptops)"
+                  value={editingCategory.name || ''}
+                  onChange={handleEditingCategoryChange}
+                  className={validationErrors.name && validationErrors.name.length > 0 ? 'border-red-500' : ''}
+                />
+                {validationErrors.name && validationErrors.name.length > 0 && (
+                  <p className="mt-1 text-xs text-red-500">
+                    {validationErrors.name.join(', ')}
+                  </p>
+                )}
+              </div>
+              <Button onClick={handleSave}>
+                {editingCategory.id ? 'Actualizar' : 'Agregar'}
               </Button>
-            )}
+              {editingCategory.id && (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setEditingCategory({ name: '' });
+                    setValidationErrors({});
+                  }}
+                >
+                  Cancelar
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="max-h-64 space-y-2 overflow-y-auto pr-2">
@@ -132,7 +170,10 @@ export function CategoryManagerModal({ open, onClose }: CategoryManagerModalProp
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => setEditingCategory(category)}
+                    onClick={() => {
+                        setEditingCategory(category);
+                        setValidationErrors({});
+                    }}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>

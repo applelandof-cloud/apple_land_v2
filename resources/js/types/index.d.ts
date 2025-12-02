@@ -94,14 +94,16 @@ export interface Product {
     name: string;
     status: string; // This is still a placeholder
     product_type_id: number;
-    device_model: DeviceModel;
-    tech_accessory: TechAccessory;
-    prices: PriceProduct[]; // Change from Price[] to PriceProduct[]
+    device_model?: DeviceModel; // Made optional as per other fields
+    tech_accessory?: TechAccessory; // Made optional as per other fields
+    maker_id: number | null; // Changed from makers: Maker[]
+    maker?: Maker; // Eager loaded maker
+    prices: PriceProduct[];
     colors: Color[];
-    makers: Maker[];
     images: Image[];
     type: Type;
     product_type: ProductType;
+    categories: Category[];
 }
 
 export interface SharedData {
@@ -115,6 +117,7 @@ export interface SharedData {
 export interface Place {
     id: number;
     name: string;
+    address: string;
 }
 
 export interface Role {
@@ -132,11 +135,15 @@ export interface User {
     phone_number: string;
     avatar?: string;
     email_verified_at: string | null;
-    two_factor_enabled?: boolean;
     created_at?: string;
     updated_at?: string;
     places: Place[];
     roles: Role[];
-    is_active: number;
+    is_active: boolean;
     [key: string]: unknown; // This allows for additional properties...
+}
+
+export interface Category {
+    id: number;
+    name: string;
 }

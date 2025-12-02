@@ -5,7 +5,7 @@ const routeTranslations: { [key: string]: string } = {
     '/places': 'Lugares',
     '/sales': 'Ventas',
     '/reports': 'Reportes',
-    '/staff': 'Personal',
+    '/staff': 'Usuarios',
     '/customers': 'Clientes',
     '/inventory': 'Inventario',
     // Add more route translations here

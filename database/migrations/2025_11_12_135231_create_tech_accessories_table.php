@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tech_accessories', function (Blueprint $table) {
-            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->primary('product_id');
             $table->string('model_number')->unique();
             $table->string('size')->nullable();

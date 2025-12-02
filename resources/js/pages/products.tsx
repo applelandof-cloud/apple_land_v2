@@ -2,9 +2,10 @@ import { ProductListItem } from '@/components/product/ProductListItem';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
-import { FloatingDeleteButton } from '@/components/ui/floating-delete-button'; // Import FloatingDeleteButton
+import { FloatingDeleteButton } from '@/components/ui/floating-delete-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 import {
   Popover,
   PopoverContent,
@@ -12,8 +13,10 @@ import {
 } from '@/components/ui/popover';
 import Layout from '@/layouts/app-layout';
 import {
+  Category,
   Color,
   Currency,
+  Maker,
   PriceProduct,
   PriceType,
   Product,
@@ -21,7 +24,7 @@ import {
 } from '@/types';
 import * as AlertDialog from '@radix-ui/react-dialog';
 import { Columns, List, Rows, Search, SlidersHorizontal } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type ViewMode = 'list' | 'tile' | 'post';
 
@@ -31,13 +34,101 @@ export default function ProductsPage() {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
   const [priceTypes, setPriceTypes] = useState<PriceType[]>([]);
+  const [allMakers, setAllMakers] = useState<Maker[]>([]); // New state for makers
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [loading, setLoading] = useState(true);
   const [openAdvancedSearch, setOpenAdvancedSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [productToAdd, setProductToAdd] = useState<Partial<Product> | null>(null); // New state
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]); // New state
+  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]); // New state
+  const [isAnimatingNewForm, setIsAnimatingNewForm] = useState(false); // New state for animation
+
+  // New handler for image file changes
+  const handleNewImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setNewImageFiles(files);
+      const previews = files.map((file) => URL.createObjectURL(file));
+      setNewImagePreviews(previews);
+    }
+  };
+
+  // Effect to clean up object URLs
+  useEffect(() => {
+    return () => {
+      newImagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
+    };
+  }, [newImagePreviews]);
+
+  const newProductFormRef = useRef<HTMLDivElement>(null); // New ref for scrolling
+
+  // Effect to scroll to the new product form and trigger animation when it appears
+  useEffect(() => {
+    if (isAdding && newProductFormRef.current) {
+      // Use setTimeout to ensure the DOM has rendered the new item before scrolling
+      const scrollTimer = setTimeout(() => {
+        newProductFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 0); // Defer to next tick
+
+      setIsAnimatingNewForm(true); // Trigger animation
+      const animationTimer = setTimeout(() => {
+        setIsAnimatingNewForm(false); // Stop animation after a delay
+      }, 1000); // Animation duration is 1s, so stop after 1s
+      
+      return () => {
+        clearTimeout(scrollTimer);
+        clearTimeout(animationTimer);
+      };
+    }
+  }, [isAdding]);
+
+  // Function to create a fresh product template - replaces useMemo
+  const createFreshProductTemplate = useCallback((): Partial<Product> => {
+    const prices: PriceProduct[] = priceTypes.map((pt) => {
+      const defaultCurrency =
+        currencies.length > 0
+          ? currencies[0]
+          : { id: 1, name: 'USD', symbol: '$' };
+      return {
+        price_type_id: pt.id,
+        value: 0,
+        currency_id: defaultCurrency.id,
+        price_type: pt,
+        currency: defaultCurrency,
+      };
+    });
+
+    return {
+      name: '',
+      product_type_id: 1,
+      maker_id: null, // New field, initialized to null
+      device_model: {
+        storage: '',
+        ram: '',
+        model_number: '',
+        sku: '',
+        sim: '',
+      },
+      tech_accessory: { model_number: '', size: '', description: '' },
+      prices: prices,
+      colors: [],
+      images: [],
+    };
+  }, [priceTypes, currencies]);
+
+  // Effect to reset productToAdd when isAdding becomes true
+  useEffect(() => {
+    if (isAdding) {
+      setProductToAdd(createFreshProductTemplate());
+    } else {
+      setProductToAdd(null); // Clear when not adding
+    }
+  }, [isAdding, createFreshProductTemplate]);
 
   const handleProductSelect = (productId: number, isSelected: boolean) => {
     setSelectedProductIds((prevSelected) => {
@@ -58,20 +149,28 @@ export default function ProductsPage() {
           currenciesResponse,
           productTypesResponse,
           priceTypesResponse,
+          makersResponse, // New fetch for makers
+          categoriesResponse,
         ] = await Promise.all([
           fetch('/api/colors'),
           fetch('/api/currencies'),
           fetch('/api/product-types'),
           fetch('/api/price-types'),
+          fetch('/api/makers'), // New fetch for makers
+          fetch('/api/categories'),
         ]);
         const colorsData = await colorsResponse.json();
         const currenciesData = await currenciesResponse.json();
         const productTypesData = await productTypesResponse.json();
         const priceTypesData = await priceTypesResponse.json();
+        const makersData = await makersResponse.json(); // New data for makers
+        const categoriesData = await categoriesResponse.json();
         setColors(colorsData);
         setCurrencies(currenciesData);
         setProductTypes(productTypesData);
         setPriceTypes(priceTypesData);
+        setAllMakers(makersData); // Set makers state
+        setAllCategories(categoriesData.categories);
       } catch (error) {
         console.error('Error fetching static data:', error);
       }
@@ -103,33 +202,75 @@ export default function ProductsPage() {
 
   const handleUpdateProduct = async (
     productToUpdate: Product | Partial<Product>,
+    filesToUpload: File[], // New parameter
   ) => {
     if (!('id' in productToUpdate)) {
       console.error('Cannot update a product without an ID.');
       return;
     }
     try {
-      const response = await fetch(`/api/products/${productToUpdate.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN':
-            document
-              .querySelector('meta[name="csrf-token"]')
-              ?.getAttribute('content') || '',
+      // 1. Upload images if any
+      if (filesToUpload.length > 0) {
+        const uploadPromises = filesToUpload.map((file) => {
+          const formData = new FormData();
+          formData.append('image', file);
+          return fetch(`/api/products/${productToUpdate.id}/images`, {
+            method: 'POST',
+            headers: {
+              'X-CSRF-TOKEN':
+                document
+                  .querySelector('meta[name="csrf-token"]')
+                  ?.getAttribute('content') || '',
+            },
+            body: formData,
+          });
+        });
+        await Promise.all(uploadPromises);
+      }
+
+      // 2. Update the product data
+      const updateResponse = await fetch(
+        `/api/products/${productToUpdate.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN':
+              document
+                .querySelector('meta[name="csrf-token"]')
+                ?.getAttribute('content') || '',
+          },
+          body: JSON.stringify(productToUpdate),
         },
-        body: JSON.stringify(productToUpdate),
-      });
-      const data = await response.json();
-      setProducts(products.map((p) => (p.id === data.id ? data : p)));
+      );
+      const updatedProduct = await updateResponse.json();
+
+      // 3. Update the product list with the final product (might include new images)
+      const finalProductResponse = await fetch(
+        `/api/products/${updatedProduct.id}`,
+      );
+      const finalProduct = await finalProductResponse.json();
+
+      setProducts(
+        products.map((p) => (p.id === finalProduct.id ? finalProduct : p)),
+      );
+      setNewImageFiles([]); // Clear image state
+      setNewImagePreviews([]); // Clear image state
     } catch (error) {
       console.error('Error updating product:', error);
+      // Optionally handle error cleanup:
+      setNewImageFiles([]);
+      setNewImagePreviews([]);
     }
   };
 
-  const handleCreateProduct = async (newProduct: Partial<Product>) => {
+  const handleCreateProduct = async (
+    newProduct: Partial<Product>,
+    filesToUpload: File[], // New parameter
+  ) => {
     try {
-      const response = await fetch('/api/products', {
+      // 1. Create the product
+      const createResponse = await fetch('/api/products', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -140,11 +281,42 @@ export default function ProductsPage() {
         },
         body: JSON.stringify(newProduct),
       });
-      const data = await response.json();
-      setProducts([data, ...products]);
+      const createdProduct = await createResponse.json(); // Product with ID
+
+      // 2. Upload images if any
+      if (filesToUpload.length > 0) {
+        const uploadPromises = filesToUpload.map((file) => {
+          const formData = new FormData();
+          formData.append('image', file);
+          return fetch(`/api/products/${createdProduct.id}/images`, {
+            method: 'POST',
+            headers: {
+              'X-CSRF-TOKEN':
+                document
+                  .querySelector('meta[name="csrf-token"]')
+                  ?.getAttribute('content') || '',
+            },
+            body: formData,
+          });
+        });
+        await Promise.all(uploadPromises);
+      }
+
+      // 3. Fetch the complete product to get image URLs (if uploaded) and update state
+      const finalProductResponse = await fetch(
+        `/api/products/${createdProduct.id}`,
+      );
+      const finalProduct = await finalProductResponse.json();
+
+      setProducts([finalProduct, ...products]);
       setIsAdding(false);
+      setNewImageFiles([]); // Clear image state
+      setNewImagePreviews([]); // Clear image state
     } catch (error) {
       console.error('Error creating product:', error);
+      // Optionally handle error cleanup:
+      setNewImageFiles([]);
+      setNewImagePreviews([]);
     }
   };
 
@@ -191,38 +363,39 @@ export default function ProductsPage() {
       .map((p) => p.name);
   }, [products, selectedProductIds]);
 
-  const newProductTemplate = useMemo((): Partial<Product> => {
-    const prices: PriceProduct[] = priceTypes.map((pt) => {
-      const defaultCurrency =
-        currencies.length > 0
-          ? currencies[0]
-          : { id: 1, name: 'USD', symbol: '$' };
-      return {
-        price_type_id: pt.id,
-        value: 0,
-        currency_id: defaultCurrency.id,
-        price_type: pt,
-        currency: defaultCurrency,
-      };
-    });
+  // const newProductTemplate = useMemo((): Partial<Product> => {
+  //   const prices: PriceProduct[] = priceTypes.map((pt) => {
+  //     const defaultCurrency =
+  //       currencies.length > 0
+  //         ? currencies[0]
+  //         : { id: 1, name: 'USD', symbol: '$' };
+  //     return {
+  //       price_type_id: pt.id,
+  //       value: 0,
+  //       currency_id: defaultCurrency.id,
+  //       price_type: pt,
+  //       currency: defaultCurrency,
+  //     };
+  //   });
 
-    return {
-      name: '',
-      product_type_id: 1,
-      device_model: {
-        storage: '',
-        ram: '',
-        model_number: '',
-        sku: '',
-        sim: '',
-      },
-      tech_accessory: { model_number: '', size: '', description: '' },
-      prices: prices,
-      colors: [],
-      makers: [],
-      images: [],
-    };
-  }, [priceTypes, currencies]);
+  //   return {
+  //     name: '',
+  //     product_type_id: 1,
+  //     device_model: {
+  //       storage: '',
+  //       ram: '',
+  //       model_number: '',
+  //       sku: '',
+  //       sim: '',
+  //     },
+  //     tech_accessory: { model_number: '', size: '', description: '' },
+  //     prices: prices,
+  //     colors: [],
+  //     categories: [],
+  //     makers: [],
+  //     images: [],
+  //   };
+  // }, [priceTypes, currencies]);
 
   return (
     <Layout title={document.title}>
@@ -323,7 +496,9 @@ export default function ProductsPage() {
         </div>
 
         {loading ? (
-          <p>Cargando productos...</p>
+            <div className="flex justify-center items-center h-[calc(100vh-180px)] w-full">
+                <Spinner />
+            </div>
         ) : (
           <div
             className={
@@ -332,16 +507,27 @@ export default function ProductsPage() {
                 : ''
             }
           >
-            {isAdding && (
+            {isAdding && productToAdd && (
               <ProductListItem
-                product={newProductTemplate}
+                ref={newProductFormRef} // Pass ref here
+                product={productToAdd}
                 isInitiallyEditing={true}
                 onSave={handleCreateProduct}
                 onCancel={() => setIsAdding(false)}
+                allCategories={allCategories}
                 allColors={colors}
+                setAllColorsInParent={setColors} // Pass parent's setter
+                allMakers={allMakers} // Pass parent's state
+                setAllMakersInParent={setAllMakers} // Pass parent's setter
                 allCurrencies={currencies}
                 allProductTypes={productTypes}
+                newImageFiles={newImageFiles} // Pass new props
+                setNewImageFiles={setNewImageFiles} // Pass new props
+                newImagePreviews={newImagePreviews} // Pass new props
+                setNewImagePreviews={setNewImagePreviews} // Pass new props
+                handleNewImageChange={handleNewImageChange} // Pass new props
                 viewMode="list"
+                className={isAnimatingNewForm ? 'animate-pulse-once' : ''} // Apply animation class
               />
             )}
             {products.map((product) => (
@@ -351,9 +537,18 @@ export default function ProductsPage() {
                 viewMode={viewMode}
                 onSave={handleUpdateProduct}
                 onCancel={() => {}}
+                allCategories={allCategories}
                 allColors={colors}
+                setAllColorsInParent={setColors} // Pass parent's setter
+                allMakers={allMakers} // Pass parent's state
+                setAllMakersInParent={setAllMakers} // Pass parent's setter
                 allCurrencies={currencies}
                 allProductTypes={productTypes}
+                newImageFiles={newImageFiles} // Pass new props
+                setNewImageFiles={setNewImageFiles} // Pass new props
+                newImagePreviews={newImagePreviews} // Pass new props
+                setNewImagePreviews={setNewImagePreviews} // Pass new props
+                handleNewImageChange={handleNewImageChange} // Pass new props
                 onSelect={handleProductSelect}
                 isSelected={selectedProductIds.includes(product.id as number)}
               />
@@ -374,14 +569,16 @@ export default function ProductsPage() {
               <AlertDialog.Title className="text-lg font-semibold">
                 ¿Estás seguro?
               </AlertDialog.Title>
-              <AlertDialog.Description className="text-sm text-muted-foreground">
-                Esta acción no se puede deshacer. Esto eliminará (soft delete)
-                los siguientes productos:
-                <ul className="my-2 list-inside list-disc">
-                  {selectedProductNames.map((name) => (
-                    <li key={name}>{name}</li>
-                  ))}
-                </ul>
+              <AlertDialog.Description asChild>
+                <div className="text-sm text-muted-foreground">
+                  Esta acción no se puede deshacer. Esto eliminará (soft delete)
+                  los siguientes productos:
+                  <ul className="my-2 list-inside list-disc">
+                    {selectedProductNames.map((name) => (
+                      <li key={name}>{name}</li>
+                    ))}
+                  </ul>
+                </div>
               </AlertDialog.Description>
               <div className="flex justify-end gap-2">
                 <Button

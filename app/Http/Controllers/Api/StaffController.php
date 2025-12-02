@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class StaffController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         $users = User::where('is_active', 1)
             ->with(['roles:id,name', 'places:id,name'])
@@ -24,7 +24,7 @@ class StaffController extends Controller
             'users'=> $users,
             'roles' => $roles,
             'places' => $places
-        ],200);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -36,7 +36,6 @@ class StaffController extends Controller
             'phone_number' => 'nullable|string|max:20',
             'username' => 'required|string|max:50|unique:users',
             'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|min:8|max:100',
             'role_ids' => 'array',
             'role_ids.*' => 'exists:roles,id',
             'place_ids' => 'array',
@@ -50,11 +49,14 @@ class StaffController extends Controller
             'phone_number' => $request->phone_number,
             'username' => $request->username,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'is_active' => true,
+            'password' => Hash::make('admin_root')
         ]);
 
         $user->roles()->attach($request->role_ids);
         $user->places()->attach($request->place_ids);
+
+        $user->load('roles:id,name', 'places:id,name');
 
         return response()->json([
             'users'=> $user
@@ -64,8 +66,12 @@ class StaffController extends Controller
     public function update(Request $request, User $user)
     {
         $validatedData = $request->validate([
-            'name' => 'sometimes|string|max:50',
-            'last_name' => 'sometimes|string|max:50',
+            'name' => 'required|string|max:50',
+            'last_name' => 'required|string|max:50',
+            'username' => 'required|string|max:50|unique:users,username,' . $user->id,
+            'email' => 'required|string|email|max:100|unique:users,email,' . $user->id,
+            'phone_number' => 'nullable|string|max:20',
+            'identification' => 'nullable|string|max:15',
             'roles' => 'sometimes|array',
             'roles.*.id' => 'exists:roles,id',
             'places' => 'sometimes|array',
@@ -98,7 +104,9 @@ class StaffController extends Controller
         $users = User::whereIn('id', $request->ids)->get();
 
         foreach ($users as $user) {
-            $user->update(['is_active' => false]);
+            $user->update([
+                'is_active' => false,
+                'password'=> Hash::make('admin_root')]);
             $user->roles()->detach();
             $user->places()->detach();
         }
@@ -124,7 +132,6 @@ class StaffController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-        $status = $request->input('status', 'active');
 
         $users = User::where('is_active', 1)
             ->when($query, function ($q) use ($query) {
