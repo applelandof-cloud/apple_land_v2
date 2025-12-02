@@ -134,7 +134,7 @@ entity "stocks" {
   # place_id: int
 }
 
-entity "status_items" {
+entity "statuses" {
   + id: int
   --
   name: varchar
@@ -243,7 +243,7 @@ place_user }o--|| users
 stocks }o--|| batches
 stocks }o--|| places
 available_items }o--|| products
-available_items }o--|| status_items
+available_items }o--|| statuses
 available_items }o--|| stocks
 payment_type }o--|| currency
 sale }o--|| users

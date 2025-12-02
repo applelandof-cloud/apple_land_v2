@@ -102,7 +102,6 @@ export interface Product {
     images: Image[];
     type: Type;
     product_type: ProductType;
-    categories: Category[];
 }
 
 export interface SharedData {
@@ -116,7 +115,6 @@ export interface SharedData {
 export interface Place {
     id: number;
     name: string;
-    address: string;
 }
 
 export interface Role {
@@ -134,15 +132,11 @@ export interface User {
     phone_number: string;
     avatar?: string;
     email_verified_at: string | null;
+    two_factor_enabled?: boolean;
     created_at?: string;
     updated_at?: string;
     places: Place[];
     roles: Role[];
-    is_active: boolean;
+    is_active: number;
     [key: string]: unknown; // This allows for additional properties...
-}
-
-export interface Category {
-    id: number;
-    name: string;
 }

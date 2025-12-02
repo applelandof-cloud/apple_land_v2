@@ -21,7 +21,7 @@ const sidebarNavItems: NavItem[] = [
         icon: undefined,
     },
     {
-        title: 'Apariencia',
+        title: 'Appearance',
         href: editAppearance(),
         icon: undefined,
     },
@@ -39,7 +39,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
         <div className="px-4 py-6">
             <Heading
                 title="Settings"
-                description="Administra tu perfil y las configuraciones de la cuenta"
+                description="Manage your profile and account settings"
             />
 
             <div className="flex flex-col lg:flex-row lg:space-x-12">

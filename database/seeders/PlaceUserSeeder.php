@@ -7,8 +7,6 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-use function Symfony\Component\Clock\now;
-
 class PlaceUserSeeder extends Seeder
 {
     /**
@@ -28,9 +26,7 @@ class PlaceUserSeeder extends Seeder
         foreach ($places as $place) {
             DB::table('place_user')->insert([
                 'user_id' => $user->id,
-                'place_id' => $place->id,
-                'created_at' => now(),
-                'updated_at'=> now()
+                'place_id' => $place->id
             ]);
         }
     }
