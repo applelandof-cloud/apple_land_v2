@@ -102,7 +102,6 @@ export interface Product {
     images: Image[];
     type: Type;
     product_type: ProductType;
-    categories: Category[];
 }
 
 export interface SharedData {
@@ -140,9 +139,4 @@ export interface User {
     roles: Role[];
     is_active: boolean;
     [key: string]: unknown; // This allows for additional properties...
-}
-
-export interface Category {
-    id: number;
-    name: string;
 }

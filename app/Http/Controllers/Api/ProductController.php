@@ -19,7 +19,6 @@ class ProductController extends Controller
             'productType',
             'prices.currency',
             'prices.priceType',
-            'categories',
             'colors',
             'makers',
             'images',
@@ -72,11 +71,6 @@ class ProductController extends Controller
             $product->colors()->sync($colorIds);
         }
 
-        if ($request->has('categories')) {
-            $categoriesIds = collect($request->input('categories'))->pluck('id');
-            $product->categories()->sync($categoriesIds);
-        }
-
         if ($request->has('prices')) {
             foreach ($request->input('prices') as $priceData) {
                 $product->prices()->create([
@@ -93,7 +87,6 @@ class ProductController extends Controller
             'productType',
             'prices.currency',
             'prices.priceType',
-            'categories',
             'colors',
             'makers',
             'images',
@@ -140,11 +133,6 @@ class ProductController extends Controller
             $product->colors()->sync($colorIds);
         }
 
-        if ($request->has('categories')) {
-            $categoriesIds = collect($request->input('categories'))->pluck('id');
-            $product->categories()->sync($categoriesIds);
-        }
-
         if ($request->has('prices')) {
             foreach ($request->input('prices') as $priceData) {
                 $priceTypeId = data_get($priceData, 'price_type_id');
@@ -180,7 +168,6 @@ class ProductController extends Controller
             'productType',
             'prices.currency',
             'prices.priceType',
-            'categories',
             'colors',
             'makers',
             'images',

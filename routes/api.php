@@ -1,6 +1,5 @@
 <?php
 
-require __DIR__."/api/categories.php";
 require __DIR__."/api/staff.php";
 require __DIR__ ."/api/products.php";
 require __DIR__ ."/api/images.php";

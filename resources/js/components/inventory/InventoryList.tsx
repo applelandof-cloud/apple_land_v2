@@ -1,4 +1,3 @@
-import { Spinner } from '@/components/ui/spinner';
 import React from 'react';
 import {
   InventoryListItem,
@@ -25,11 +24,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
   renderPagination,
 }) => {
   if (loading) {
-    return (
-      <div className="flex h-[calc(100vh-180px)] w-full items-center justify-center">
-        <Spinner />
-      </div>
-    );
+    return <p>Cargando inventarios...</p>;
   }
 
   if (error) {
