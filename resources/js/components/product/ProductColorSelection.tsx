@@ -1,7 +1,7 @@
 import { ColorManagerModal } from '@/components/color/ColorManagerModal';
+import { MultiSelectDropdown } from '@/components/custom/MultiSelectDropdown';
 import { EditableField } from '@/components/EditableField';
 import { Button } from '@/components/ui/button';
-import { MultiSelectDropdown } from '@/components/custom/MultiSelectDropdown';
 import { Color, Product } from '@/types';
 import { Pencil } from 'lucide-react';
 import React, { useCallback, useState } from 'react';

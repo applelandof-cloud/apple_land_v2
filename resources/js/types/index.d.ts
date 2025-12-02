@@ -3,6 +3,8 @@ import { LucideIcon } from 'lucide-react';
 
 export interface Auth {
     user: User;
+    roles: Role[];
+    can_update_password: boolean;
 }
 
 export interface BreadcrumbItem {
@@ -59,7 +61,7 @@ export interface PriceProduct {
     created_at?: string;
     updated_at?: string;
     price_type: PriceType; // Eager loaded
-    currency: Currency;     // Eager loaded
+    currency: Currency; // Eager loaded
 }
 
 export interface DeviceModel {
@@ -104,6 +106,7 @@ export interface Product {
     type: Type;
     product_type: ProductType;
     categories: Category[];
+    primary_image_url: string;
 }
 
 export interface SharedData {
@@ -137,6 +140,7 @@ export interface User {
     email_verified_at: string | null;
     created_at?: string;
     updated_at?: string;
+    active_role?: string;
     places: Place[];
     roles: Role[];
     is_active: boolean;

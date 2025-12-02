@@ -13,6 +13,8 @@ class StatusesSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('statuses')->truncate();
+
         DB::table('statuses')->insert([
             [
                 'name' => 'DISPONIBLE',

@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('devices', function (Blueprint $table) {
-            $table->foreignId('stock_id')->constrained('stocks')->cascadeOnDelete();
+            $table->unsignedBigInteger('stock_id');
+            $table->foreign('stock_id')->references('id')->on('stocks')->onDelete('cascade');
             $table->primary('stock_id');
             $table->string('imei')->unique()->nullable();
             $table->string('imei2')->unique()->nullable();

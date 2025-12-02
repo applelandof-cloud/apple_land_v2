@@ -13,6 +13,8 @@ class DevicesSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('devices')->truncate();
+
         DB::table('devices')->insert([
             [
                 'stock_id'=> 1,

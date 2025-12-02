@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('device_models', function (Blueprint $table) {
-            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('product_id');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->primary('product_id');
             $table->string('model_number')->unique();
             $table->string('sku')->nullable();

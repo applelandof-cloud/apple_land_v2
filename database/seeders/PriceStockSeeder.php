@@ -13,6 +13,8 @@ class PriceStockSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('price_stock')->truncate();
+
         DB::table('price_stock')->insert([
             [
                 'stock_id' => 1,

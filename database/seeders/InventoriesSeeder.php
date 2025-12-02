@@ -13,6 +13,8 @@ class InventoriesSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('inventories')->truncate();
+
         DB::table('inventories')->insert([
             [
                 'id' => 1,

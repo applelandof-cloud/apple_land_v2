@@ -13,38 +13,40 @@ class RolesSeeder extends Seeder
      */
     public function run(): void
     {
-        // Clear the table before seeding
-        DB::table('roles')->delete();
-        DB::table('roles')->truncate();
-
         DB::table('roles')->insert([
             [
-                'name' => 'vendedor',
+                'name' => 'seller',
+                'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'name' => 'admin',
+                'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'name' => 'owner',
+                'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'name' => 'cliente_externo',
+                'name' => 'external_client',
+                'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'name' => 'vendedor_externo',
+                'name' => 'external_seller',
+                'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'name' => 'visitante_externo',
+                'name' => 'external_visitor',
+                'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ]

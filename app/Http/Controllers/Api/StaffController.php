@@ -56,6 +56,16 @@ class StaffController extends Controller
         $user->roles()->attach($request->role_ids);
         $user->places()->attach($request->place_ids);
 
+        // Set active_role after roles are attached
+        if ($request->has('role_ids') && !empty($request->role_ids)) {
+            $firstRoleId = (int) $request->role_ids[0]; // Ensure it's an integer
+            $firstRole = Role::find($firstRoleId);
+            if ($firstRole) {
+                $user->active_role = $firstRole->name;
+                $user->save();
+            }
+        }
+
         $user->load('roles:id,name', 'places:id,name');
 
         return response()->json([

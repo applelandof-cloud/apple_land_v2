@@ -13,6 +13,8 @@ class ConditionStockSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('condition_stock')->truncate();
+
         DB::table('condition_stock')->insert([
             [
                 'condition_id' => 1,

@@ -125,3 +125,6 @@ install required dependency
 
 Add a spanish language
 `php artisan lang:add es`
+
+set language from existent laravel project
+`php artisan lang:update`

@@ -37,11 +37,16 @@ export function ProductImageUpload({
     handleNewImageChange(e);
   }, [handleNewImageChange]); // Removed setters from deps, as they are stable
 
+  const defaultPlaceholder =
+    product.product_type_id !== undefined && product.product_type_id === 2
+      ? '/placeholders/accessory.webp'
+      : '/placeholders/phone.webp';
+
   return (
     <EditableField label="Imágenes">
       <div>
         <img
-          src={images?.[0]?.url || 'https://via.placeholder.com/150'}
+          src={images?.[0]?.url || defaultPlaceholder}
           alt={name}
           className="mb-4 h-48 w-full rounded-md object-cover" // Changed h-auto to h-48
         />
