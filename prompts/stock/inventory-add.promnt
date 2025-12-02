@@ -1,0 +1,12 @@
+> @resources/js/pages/inventory.tsx implement the add feature for inventory it should display a modal on top of   █
+  inventory view, not sure if that modal could have a dedicated route like /inventory/add, when the modal is open █
+  first section let user select a product an existing product, show a nice UI to allow user select an existing    █
+  product maybe a carousel or something amazing, the seccond section allows create a batch showing a form to fill █
+  a new batch information like entry_date and expiration_date. the third section allows user to pick a place from █
+  table places also createa a nice UI for this one, the fourth section is for the count it shows a big input      █
+  field, this is the critical because it determines the fifth section of the form: if all previous fields were    █
+  filled then based on the products product_type_id it should display 2 different lists to fill: a list of        █
+  accessories or a list of devices, in both cases the list lenght should be equal to count  input, and the user   █
+  should have the list filled with default values,for color=1 is gift=false, status=1 in the case of devices the  █
+  list should ready to be filled with imei, imei2, serial number, the storage could be autofilled with            █
+  @app/Models/DeviceModel.php storage value.

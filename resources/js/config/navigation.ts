@@ -1,8 +1,19 @@
-import { dashboard, inventory, products, sales, reports, staff } from '@/routes';
+import {
+    dashboard,
+    inventory,
+    products,
+    reports,
+    sales,
+    staff,
+} from '@/routes';
 import { type NavItem } from '@/types';
 import {
-    Smartphone, LayoutGrid, ShoppingCart, BarChart, Users, Boxes,
-    //  Folder, BookOpen
+    BarChart,
+    Boxes,
+    LayoutGrid,
+    ShoppingCart,
+    Smartphone,
+    Users,
 } from 'lucide-react';
 
 export const mainNavItems: NavItem[] = [

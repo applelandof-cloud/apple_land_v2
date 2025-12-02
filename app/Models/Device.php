@@ -14,16 +14,11 @@ class Device extends Model
         'imei2',
         'serial_number',
         'storage',
-        'status_id',
+        'stock_id',
     ];
 
-    public function status()
+    public function stock()
     {
-        return $this->belongsTo(Statuses::class);
-    }
-
-    public function deviceStock()
-    {
-        return $this->hasOne(DeviceStock::class);
+        return $this->belongsTo(Stock::class);
     }
 }

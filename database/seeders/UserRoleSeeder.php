@@ -13,27 +13,48 @@ class UserRoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::where('username', 'sonia')->first();
-
-        $roles = DB::table('roles')->pluck('id', 'name');
-
-        $userRoles = [
-            $roles['owner'] ?? null,
-            $roles['admin'] ?? null,
-            $roles['vendedor'] ?? null,
+        $userRolesMap = [
+            'sonia' => ['owner', 'admin', 'vendedor'],
+            'ivo' => ['vendedor'],
+            'ela' => ['vendedor'],
         ];
 
-        $userRoles = array_filter($userRoles);
+        $roles = DB::table('roles')->pluck('id', 'name')->all();
 
-        foreach ($userRoles as $roleId) {
-            DB::table('user_role')->insert([
-                'user_id' => $user->id,
-                'role_id' => $roleId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        $users = User::whereIn('username', array_keys($userRolesMap))->get()->keyBy('username');
+
+        $userRoleInserts = [];
+
+        foreach ($userRolesMap as $username => $userRoleNames) {
+            if (!isset($users[$username])) {
+                $this->command->warn("UserRoleSeeder: User '{$username}' not found. Skipping.");
+                continue;
+            }
+            $userId = $users[$username]->id;
+
+            DB::table('user_role')->where('user_id', $userId)->delete();
+
+            foreach ($userRoleNames as $roleName) {
+                if (!isset($roles[$roleName])) {
+                    $this->command->warn("UserRoleSeeder: Role '{$roleName}' not found. Skipping for user '{$username}'.");
+                    continue;
+                }
+                $roleId = $roles[$roleName];
+
+                $userRoleInserts[] = [
+                    'user_id' => $userId,
+                    'role_id' => $roleId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
         }
 
-        $this->command->info('UserRoleSeeder: Roles assigned to user');
+        if (!empty($userRoleInserts)) {
+            DB::table('user_role')->insert($userRoleInserts);
+            $this->command->info('UserRoleSeeder: Roles assigned successfully.');
+        } else {
+            $this->command->info('UserRoleSeeder: No roles to assign.');
+        }
     }
 }

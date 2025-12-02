@@ -105,6 +105,17 @@ class ColorProductSeeder extends Seeder
                 'product_id' => 4,
                 'color_id' => 13, // Red
             ],
+
+            // Funda ipad
+            [
+                'product_id' => 5,
+                'color_id' => 11, // Alpine Green
+            ],
+            [
+                'product_id' => 5,
+                'color_id' => 13, // Red
+            ],
+            
         ]);
     }
 }
