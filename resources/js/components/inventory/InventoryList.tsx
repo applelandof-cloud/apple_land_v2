@@ -19,6 +19,7 @@ interface InventoryListProps {
   onStockSelect: (stockId: number, isSelected: boolean) => void;
   onDeleteStocks: (stockIds: number[]) => void;
   renderFilterIcons: () => React.ReactNode;
+  isSearching?: boolean;
 }
 
 export const InventoryList: React.FC<InventoryListProps> = ({
@@ -33,6 +34,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
   onStockSelect,
   onDeleteStocks,
   renderFilterIcons,
+  isSearching,
 }) => {
   const totalStockCount = inventories.reduce((sum, inventory) => {
     return sum + (inventory.stocks ? inventory.stocks.length : 0);
@@ -85,6 +87,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
               onToggleExpand={onToggleExpand}
               selectedStockIds={selectedStockIds}
               onStockSelect={onStockSelect}
+              isSearching={isSearching}
             />
           ))}
         </ul>

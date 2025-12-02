@@ -17,10 +17,13 @@ class ConditionStockSeeder extends Seeder
             [
                 'condition_id' => 1,
                 'stock_id' => 1,
+                'description'=> 'Buen estado',
             ],
             [
                 'condition_id' => 2,
                 'stock_id' => 2,
+                'description'=> 'Poca batería',
+
             ],
         ]);
     }

@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('price_stock', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('stock_id')->constrained('stocks');
-            $table->foreignId('price_id')->constrained('prices');
+            $table->primary('stock_id');
+            $table->foreignId('price_type_id')->constrained('price_types')->cascadeOnDelete();
             $table->decimal('value', 10, 2);
             $table->foreignId('currency_id')->constrained('currencies');
             $table->timestamps();
@@ -22,7 +22,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+ * Reverse the migrations.[]
      */
     public function down(): void
     {

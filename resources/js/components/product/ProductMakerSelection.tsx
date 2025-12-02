@@ -1,5 +1,5 @@
-import { MakerManagerModal } from '@/components/MakerManagerModal'; // Will create this later
 import { EditableField } from '@/components/EditableField';
+import { MakerManagerModal } from '@/components/MakerManagerModal'; // Will create this later
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -19,6 +19,7 @@ interface ProductMakerSelectionProps {
   allMakers: Maker[];
   setAllMakers: (makers: Maker[]) => void; // This is the local setter for allMakers in ProductForm
   setAllMakersInParent: (makers: Maker[]) => void; // This is the setter from ProductsPage
+  apiErrors?: Record<string, string[]>;
 }
 
 export function ProductMakerSelection({
@@ -78,7 +79,9 @@ export function ProductMakerSelection({
                   variant="outline"
                   className="w-full justify-start font-normal"
                 >
-                  {selectedMaker ? selectedMaker.name : 'Seleccionar Fabricante'}
+                  {selectedMaker
+                    ? selectedMaker.name
+                    : 'Seleccionar Fabricante'}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>

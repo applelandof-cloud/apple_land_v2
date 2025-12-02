@@ -178,6 +178,7 @@ export const AddInventoryModal: React.FC<AddInventoryModalProps> = ({
         imei2: '',
         serial_number: '',
         storage: deviceModel?.storage || '',
+        description: '',
       });
     }
     setFormData({ ...formData, count: String(count), stocks: newStocks });

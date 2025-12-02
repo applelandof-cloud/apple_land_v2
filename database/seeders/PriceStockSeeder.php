@@ -16,15 +16,16 @@ class PriceStockSeeder extends Seeder
         DB::table('price_stock')->insert([
             [
                 'stock_id' => 1,
-                'price_id' => 1,
-                'value' => 1200,
+                'price_type_id' => 1,
+                'value' => 1900,
                 'currency_id' => 1,
             ],
             [
                 'stock_id' => 2,
-                'price_id' => 1,
-                'value' => 1400,
+                'price_type_id' => 2,
+                'value' => 1900,
                 'currency_id' => 1,
+                
             ],
         ]);
     }

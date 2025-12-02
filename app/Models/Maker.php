@@ -6,8 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Maker extends Model
 {
+    protected $fillable = [
+        'name',
+        'origin',
+        'updated_at',
+        'created_at'
+    ];
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'maker_product');
+        return $this->hasMany(Product::class);
     }
 }
