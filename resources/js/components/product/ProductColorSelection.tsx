@@ -1,7 +1,12 @@
-import { ColorManagerModal } from '@/components/color/ColorManagerModal';
+import { ColorManagerModal } from '@/components/ColorManagerModal';
 import { EditableField } from '@/components/EditableField';
 import { Button } from '@/components/ui/button';
-import { MultiSelectDropdown } from '@/components/custom/MultiSelectDropdown';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Color, Product } from '@/types';
 import { Pencil } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
@@ -65,13 +70,6 @@ export function ProductColorSelection({
     setEditedProduct({ ...editedProduct, colors: newColors });
   };
 
-  const handleColorSelection = (id: string) => {
-    const color = allColors.find((c) => c.id.toString() === id);
-    if (color) {
-      handleColorChange(color);
-    }
-  };
-
   return (
     <>
       <ColorManagerModal
@@ -81,14 +79,34 @@ export function ProductColorSelection({
       <EditableField label="Colores">
         <>
           <div className="flex items-center gap-2">
-            <MultiSelectDropdown
-              items={allColors}
-              selectedIds={(editedProduct.colors || []).map((c) =>
-                c.id.toString(),
-              )}
-              onSelectionChange={handleColorSelection}
-              placeholder="Seleccionar Colores"
-            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start font-normal"
+                >
+                  Seleccionar Colores
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {allColors.map((color) => (
+                  <DropdownMenuCheckboxItem
+                    key={color.id}
+                    checked={(editedProduct.colors || []).some(
+                      (c) => c.id === color.id,
+                    )}
+                    onCheckedChange={() => handleColorChange(color)}
+                    className="flex items-center"
+                  >
+                    <span
+                      className="mr-2 h-4 w-4 rounded-full border"
+                      style={{ backgroundColor: color.hex_code }}
+                    ></span>
+                    {color.name}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="ghost"
               size="icon"
