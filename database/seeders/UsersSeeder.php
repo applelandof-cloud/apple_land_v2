@@ -15,10 +15,10 @@ class UsersSeeder extends Seeder
     {
         User::query()->delete();
         User::create([
-            'name' => 'Ivo',
+            'name' => 'Juan',
             'last_name' => 'Rojas',
-            'username' => 'ivo',
-            'email' => 'ivo@gmail.com',
+            'username' => 'juan',
+            'email' => 'juan@gmail.com',
             'password' => Hash::make('123456'),
             'identification' => '1234567890',
             'phone_number' => '77654321',
