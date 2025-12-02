@@ -22,7 +22,7 @@ class ColorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:50|unique:colors,name',
+            'name' => 'required|string|max:50',
             'hex_code' => 'required|string|max:9',
         ]);
 
