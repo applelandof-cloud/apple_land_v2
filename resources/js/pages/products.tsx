@@ -5,13 +5,12 @@ import { FloatingActionButton } from '@/components/ui/floating-action-button';
 import { FloatingDeleteButton } from '@/components/ui/floating-delete-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Spinner } from '@/components/ui/spinner';
-import { useCustomToast } from '@/hooks/use-custom-toast';
 import Layout from '@/layouts/app-layout';
 import {
   Category,
@@ -24,14 +23,12 @@ import {
   ProductType,
 } from '@/types';
 import * as AlertDialog from '@radix-ui/react-dialog';
-import axios from 'axios';
-import { Columns, Rows, Search, SlidersHorizontal } from 'lucide-react';
+import { Columns, List, Rows, Search, SlidersHorizontal } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type ViewMode = 'list' | 'tile' | 'post';
 
 export default function ProductsPage() {
-  const { showErrorToast } = useCustomToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
@@ -44,34 +41,14 @@ export default function ProductsPage() {
   const [openAdvancedSearch, setOpenAdvancedSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [productToAdd, setProductToAdd] = useState<Partial<Product> | null>(
-    null,
-  ); // New state
+  const [productToAdd, setProductToAdd] = useState<Partial<Product> | null>(null); // New state
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]); // New state
   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]); // New state
   const [isAnimatingNewForm, setIsAnimatingNewForm] = useState(false); // New state for animation
-  const [selectedColorIds, setSelectedColorIds] = useState<number[]>([]); // New state for selected colors
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]); // New state for selected categories
-  const [createApiErrors, setCreateApiErrors] = useState<Record<string, string[]>>({}); // New state for API errors for new product form
 
-  // Helper function to build the API query string
-  const buildQueryString = useCallback(() => {
-    const params = new URLSearchParams();
-
-    if (searchTerm) {
-      params.append('search', searchTerm);
-    }
-    selectedColorIds.forEach((id) => {
-      params.append('color_ids[]', id.toString());
-    });
-    selectedCategoryIds.forEach((id) => {
-      params.append('category_ids[]', id.toString());
-    });
-
-    return params.toString();
-  }, [searchTerm, selectedColorIds, selectedCategoryIds]);
+  // New handler for image file changes
   const handleNewImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
@@ -95,17 +72,14 @@ export default function ProductsPage() {
     if (isAdding && newProductFormRef.current) {
       // Use setTimeout to ensure the DOM has rendered the new item before scrolling
       const scrollTimer = setTimeout(() => {
-        newProductFormRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
+        newProductFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 0); // Defer to next tick
 
       setIsAnimatingNewForm(true); // Trigger animation
       const animationTimer = setTimeout(() => {
         setIsAnimatingNewForm(false); // Stop animation after a delay
       }, 1000); // Animation duration is 1s, so stop after 1s
-
+      
       return () => {
         clearTimeout(scrollTimer);
         clearTimeout(animationTimer);
@@ -166,20 +140,6 @@ export default function ProductsPage() {
     });
   };
 
-  const handleColorChange = (colorId: number, isChecked: boolean) => {
-    setSelectedColorIds((prev) =>
-      isChecked ? [...prev, colorId] : prev.filter((id) => id !== colorId),
-    );
-  };
-
-  const handleCategoryChange = (categoryId: number, isChecked: boolean) => {
-    setSelectedCategoryIds((prev) =>
-      isChecked
-        ? [...prev, categoryId]
-        : prev.filter((id) => id !== categoryId),
-    );
-  };
-
   // Effect for fetching static data like colors, currencies, etc.
   useEffect(() => {
     async function fetchStaticData() {
@@ -192,19 +152,25 @@ export default function ProductsPage() {
           makersResponse, // New fetch for makers
           categoriesResponse,
         ] = await Promise.all([
-          axios.get('/api/colors'),
-          axios.get('/api/currencies'),
-          axios.get('/api/product-types'),
-          axios.get('/api/price-types'),
-          axios.get('/api/makers'), // New fetch for makers
-          axios.get('/api/categories'),
+          fetch('/api/colors'),
+          fetch('/api/currencies'),
+          fetch('/api/product-types'),
+          fetch('/api/price-types'),
+          fetch('/api/makers'), // New fetch for makers
+          fetch('/api/categories'),
         ]);
-        setColors(colorsResponse.data);
-        setCurrencies(currenciesResponse.data);
-        setProductTypes(productTypesResponse.data);
-        setPriceTypes(priceTypesResponse.data);
-        setAllMakers(makersResponse.data); // Set makers state
-        setAllCategories(categoriesResponse.data.categories);
+        const colorsData = await colorsResponse.json();
+        const currenciesData = await currenciesResponse.json();
+        const productTypesData = await productTypesResponse.json();
+        const priceTypesData = await priceTypesResponse.json();
+        const makersData = await makersResponse.json(); // New data for makers
+        const categoriesData = await categoriesResponse.json();
+        setColors(colorsData);
+        setCurrencies(currenciesData);
+        setProductTypes(productTypesData);
+        setPriceTypes(priceTypesData);
+        setAllMakers(makersData); // Set makers state
+        setAllCategories(categoriesData.categories);
       } catch (error) {
         console.error('Error fetching static data:', error);
       }
@@ -216,13 +182,12 @@ export default function ProductsPage() {
   // Effect for fetching products with debouncing on the search term
   useEffect(() => {
     setLoading(true);
-    const queryString = buildQueryString(); // Get the query string
     const debounceTimer = setTimeout(() => {
       const fetchProducts = async () => {
         try {
-          const url = `/api/products${queryString ? '?' + queryString : ''}`; // Construct URL
-          const response = await axios.get(url);
-          setProducts(response.data);
+          const response = await fetch(`/api/products?search=${searchTerm}`);
+          const data = await response.json();
+          setProducts(data);
         } catch (error) {
           console.error('Error fetching products:', error);
         } finally {
@@ -233,164 +198,125 @@ export default function ProductsPage() {
     }, 300); // 300ms debounce delay
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm, buildQueryString]);
+  }, [searchTerm]);
 
   const handleUpdateProduct = async (
     productToUpdate: Product | Partial<Product>,
     filesToUpload: File[], // New parameter
-  ): Promise<Record<string, string[]> | null> => {
+  ) => {
     if (!('id' in productToUpdate)) {
       console.error('Cannot update a product without an ID.');
-      return { global: ['Cannot update a product without an ID.'] }; // Return an error object
+      return;
     }
     try {
-      const csrfToken =
-        document
-          .querySelector('meta[name="csrf-token"]')
-          ?.getAttribute('content') || '';
       // 1. Upload images if any
       if (filesToUpload.length > 0) {
         const uploadPromises = filesToUpload.map((file) => {
           const formData = new FormData();
           formData.append('image', file);
-          return axios.post(
-            `/api/products/${productToUpdate.id}/images`,
-            formData,
-            {
-              headers: {
-                'X-CSRF-TOKEN': csrfToken,
-              },
+          return fetch(`/api/products/${productToUpdate.id}/images`, {
+            method: 'POST',
+            headers: {
+              'X-CSRF-TOKEN':
+                document
+                  .querySelector('meta[name="csrf-token"]')
+                  ?.getAttribute('content') || '',
             },
-          );
+            body: formData,
+          });
         });
-        const uploadResponses = await Promise.all(uploadPromises);
-        const uploadErrors: Record<string, string[]> = {};
-        uploadResponses.forEach((res, index) => {
-          if (!res.data) {
-            uploadErrors[`image_${index}`] = ['Failed to upload image'];
-          }
-        });
-        if (Object.keys(uploadErrors).length > 0) {
-          return uploadErrors;
-        }
+        await Promise.all(uploadPromises);
       }
 
       // 2. Update the product data
-      const updateResponse = await axios.put(
+      const updateResponse = await fetch(
         `/api/products/${productToUpdate.id}`,
-        productToUpdate,
         {
+          method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
+            'X-CSRF-TOKEN':
+              document
+                .querySelector('meta[name="csrf-token"]')
+                ?.getAttribute('content') || '',
           },
+          body: JSON.stringify(productToUpdate),
         },
       );
-
-      const updatedProduct = updateResponse.data;
+      const updatedProduct = await updateResponse.json();
 
       // 3. Update the product list with the final product (might include new images)
-      const finalProductResponse = await axios.get(
+      const finalProductResponse = await fetch(
         `/api/products/${updatedProduct.id}`,
       );
-      const finalProduct = finalProductResponse.data;
+      const finalProduct = await finalProductResponse.json();
 
       setProducts(
         products.map((p) => (p.id === finalProduct.id ? finalProduct : p)),
       );
       setNewImageFiles([]); // Clear image state
       setNewImagePreviews([]); // Clear image state
-      return null; // No errors
     } catch (error) {
       console.error('Error updating product:', error);
       // Optionally handle error cleanup:
       setNewImageFiles([]);
       setNewImagePreviews([]);
-      return {
-        global: ['An unexpected error occurred during product update.'],
-      };
     }
   };
 
   const handleCreateProduct = async (
     newProduct: Partial<Product>,
     filesToUpload: File[], // New parameter
-  ): Promise<Record<string, string[]> | null> => {
+  ) => {
     try {
-      const csrfToken =
-        document
-          .querySelector('meta[name="csrf-token"]')
-          ?.getAttribute('content') || '';
       // 1. Create the product
-      const createResponse = await axios.post('/api/products', newProduct, {
+      const createResponse = await fetch('/api/products', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
+          'X-CSRF-TOKEN':
+            document
+              .querySelector('meta[name="csrf-token"]')
+              ?.getAttribute('content') || '',
         },
+        body: JSON.stringify(newProduct),
       });
-
-      const createdProduct = createResponse.data;
+      const createdProduct = await createResponse.json(); // Product with ID
 
       // 2. Upload images if any
       if (filesToUpload.length > 0) {
         const uploadPromises = filesToUpload.map((file) => {
           const formData = new FormData();
           formData.append('image', file);
-          return axios.post(
-            `/api/products/${createdProduct.id}/images`,
-            formData,
-            {
-              headers: {
-                'X-CSRF-TOKEN': csrfToken,
-              },
+          return fetch(`/api/products/${createdProduct.id}/images`, {
+            method: 'POST',
+            headers: {
+              'X-CSRF-TOKEN':
+                document
+                  .querySelector('meta[name="csrf-token"]')
+                  ?.getAttribute('content') || '',
             },
-          );
+            body: formData,
+          });
         });
-        const uploadResponses = await Promise.all(uploadPromises);
-        const uploadErrors: Record<string, string[]> = {};
-        uploadResponses.forEach((res, index) => {
-          if (!res.data) {
-            uploadErrors[`image_${index}`] = ['Failed to upload image'];
-          }
-        });
-        if (Object.keys(uploadErrors).length > 0) {
-          return uploadErrors;
-        }
+        await Promise.all(uploadPromises);
       }
 
       // 3. Fetch the complete product to get image URLs (if uploaded) and update state
-      const finalProductResponse = await axios.get(
+      const finalProductResponse = await fetch(
         `/api/products/${createdProduct.id}`,
       );
-      const finalProduct = finalProductResponse.data;
+      const finalProduct = await finalProductResponse.json();
 
       setProducts([finalProduct, ...products]);
       setIsAdding(false);
       setNewImageFiles([]); // Clear image state
       setNewImagePreviews([]); // Clear image state
-      setCreateApiErrors({}); // Clear errors on success
-      return null; // No errors
     } catch (error) {
-      const errorMessage =
-        axios.isAxiosError(error) && error.response?.data?.message
-          ? (error.response.data.message as string)
-          : error instanceof Error
-            ? error.message
-            : 'An unknown error occurred.';
-      showErrorToast(errorMessage, 'Creation Failed');
       console.error('Error creating product:', error);
       // Optionally handle error cleanup:
       setNewImageFiles([]);
       setNewImagePreviews([]);
-
-      if (axios.isAxiosError(error) && error.response?.data?.errors) {
-        setCreateApiErrors(
-          error.response.data.errors as Record<string, string[]>,
-        );
-        return error.response.data.errors as Record<string, string[]>;
-      }
-      setCreateApiErrors({ global: [errorMessage] });
-      return { global: [errorMessage] }; // Return unexpected error
     }
   };
 
@@ -402,26 +328,28 @@ export default function ProductsPage() {
 
   const executeDelete = async () => {
     try {
-      await axios.post(
-        '/api/products/bulk-delete',
-        { ids: selectedProductIds },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN':
-              document
-                .querySelector('meta[name="csrf-token"]')
-                ?.getAttribute('content') || '',
-          },
+      const response = await fetch('/api/products/bulk-delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN':
+            document
+              .querySelector('meta[name="csrf-token"]')
+              ?.getAttribute('content') || '',
         },
-      );
+        body: JSON.stringify({ ids: selectedProductIds }),
+      });
 
-      setProducts((prevProducts) =>
-        prevProducts.filter(
-          (p) => !selectedProductIds.includes(p.id as number),
-        ),
-      );
-      setSelectedProductIds([]);
+      if (response.ok) {
+        setProducts((prevProducts) =>
+          prevProducts.filter(
+            (p) => !selectedProductIds.includes(p.id as number),
+          ),
+        );
+        setSelectedProductIds([]);
+      } else {
+        console.error('Failed to delete products');
+      }
     } catch (error) {
       console.error('Error deleting products:', error);
     } finally {
@@ -507,55 +435,29 @@ export default function ProductsPage() {
                     <h4 className="leading-none font-medium">
                       Búsqueda Avanzada
                     </h4>
+                    <p className="text-sm text-muted-foreground">
+                      Refina tu búsqueda con las opciones a continuación.
+                    </p>
                   </div>
                   <div className="grid gap-y-4">
                     <div className="grid gap-2">
-                      <Label>Colores</Label>
+                      <Label htmlFor="date-range">Rango de Fechas</Label>
                       <div className="grid grid-cols-2 gap-2">
-                        {colors.map((color) => (
-                          <div
-                            key={color.id}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              id={`color-${color.id}`}
-                              checked={selectedColorIds.includes(color.id)}
-                              onCheckedChange={(checked) =>
-                                handleColorChange(color.id, checked as boolean)
-                              }
-                            />
-                            <Label htmlFor={`color-${color.id}`}>
-                              {color.name}
-                            </Label>
-                          </div>
-                        ))}
+                        <Input type="date" id="start-date" />
+                        <Input type="date" id="end-date" />
                       </div>
                     </div>
                     <div className="grid gap-2">
-                      <Label>Categorías</Label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {allCategories.map((category) => (
-                          <div
-                            key={category.id}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              id={`category-${category.id}`}
-                              checked={selectedCategoryIds.includes(
-                                category.id,
-                              )}
-                              onCheckedChange={(checked) =>
-                                handleCategoryChange(
-                                  category.id,
-                                  checked as boolean,
-                                )
-                              }
-                            />
-                            <Label htmlFor={`category-${category.id}`}>
-                              {category.name}
-                            </Label>
-                          </div>
-                        ))}
+                      <Label>Otras Opciones</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="option1" />
+                          <Label htmlFor="option1">Opción 1</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="option2" />
+                          <Label htmlFor="option2">Opción 2</Label>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -583,20 +485,20 @@ export default function ProductsPage() {
             >
               <Columns className="h-4 w-4" />
             </Button>
-            {/* <Button
+            <Button
               variant={viewMode === 'post' ? 'secondary' : 'ghost'}
               size="icon"
               onClick={() => setViewMode('post')}
             >
               <List className="h-4 w-4" />
-            </Button> */}
+            </Button>
           </div>
         </div>
 
         {loading ? (
-          <div className="flex h-[calc(100vh-180px)] w-full items-center justify-center">
-            <Spinner />
-          </div>
+            <div className="flex justify-center items-center h-[calc(100vh-180px)] w-full">
+                <Spinner />
+            </div>
         ) : (
           <div
             className={
@@ -626,7 +528,6 @@ export default function ProductsPage() {
                 handleNewImageChange={handleNewImageChange} // Pass new props
                 viewMode="list"
                 className={isAnimatingNewForm ? 'animate-pulse-once' : ''} // Apply animation class
-                apiErrors={createApiErrors} // Pass API errors to the ProductListItem
               />
             )}
             {products.map((product) => (

@@ -11,7 +11,6 @@ use App\Models\Device;
 use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\Stock;
-use App\Models\DeviceStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -22,7 +21,7 @@ class InventoryController extends Controller
         $query = Inventory::query();
 
         $stockFilter = function ($query) use ($request) {
-            $query->with(['color', 'status', 'device', 'accessory', 'product.productType', 'product.techAccessory', 'condition']);
+            $query->with(['color', 'status', 'device', 'accessory', 'product', 'condition']);
             if ($request->filled('status_id')) {
                 $query->where('status_id', $request->input('status_id'));
             }
@@ -103,6 +102,7 @@ class InventoryController extends Controller
             'stocks.*.serial_number' => 'nullable|string|max:255',
             'stocks.*.storage' => 'nullable|string|max:255',
             'stocks.*.size' => 'nullable|string|max:255',
+            'stocks.*.description' => 'nullable|string',
 
         ]);
 
@@ -156,6 +156,7 @@ class InventoryController extends Controller
                         'stock_id' => $stock->id,
                         'serial_number' => $stockData['serial_number'] ?? null,
                         'size' => $stockData['size'] ?? null,
+                        'description' => $stockData['description'] ?? null,
                     ]);
                 }
             }

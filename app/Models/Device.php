@@ -9,8 +9,6 @@ class Device extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = "stock_id";
-
     protected $fillable = [
         'stock_id',
         'imei',
@@ -21,6 +19,6 @@ class Device extends Model
 
     public function stock()
     {
-        return $this->belongsTo(Stock::class, 'stock_id', 'id');
+        return $this->belongsTo(Stock::class);
     }
 }

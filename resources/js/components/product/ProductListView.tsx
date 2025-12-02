@@ -43,6 +43,7 @@ export function ProductListView({
     prices,
     categories,
     colors,
+    images,
     product_type,
   } = product;
 
@@ -51,144 +52,132 @@ export function ProductListView({
       className={cn(
         productListItemVariants({ viewMode: 'list' }),
         className,
-        'flex flex-col md:flex-row items-start border-b p-4 space-y-4 md:space-y-0 md:space-x-4 relative',
+        'flex flex-col items-start border-b p-4 md:flex-row',
       )}
     >
-      {id && onSelect && (
-        <div className="absolute top-4 left-4 z-10">
+      <div className="mr-4 flex items-center">
+        {id && onSelect && (
           <Checkbox
             checked={isSelected}
             onCheckedChange={(checked) =>
               onSelect(id as number, checked as boolean)
             }
-            className="h-4 w-4"
+            className="mr-2 h-4 w-4"
           />
-        </div>
-      )}
-      <div className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 relative">
+        )}
         <img
-          src={product.primary_image_url}
+          src={images?.[0]?.url || 'https://via.placeholder.com/150'}
           alt={name}
-          className="w-full h-full object-cover rounded-md"
+          className="mb-4 h-auto w-full rounded-md object-cover md:mr-4 md:mb-0 md:h-32 md:w-32"
         />
       </div>
-      <div className="grid w-full grid-cols-1 md:grid-cols-10 gap-4 flex-grow">
-        <div className="md:col-span-3 flex flex-col justify-between">
-          <div>
-            <h3 className="text-lg font-bold">{name}</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              {maker?.name ? `${maker.name} ` : ''}
-              {maker?.name && product_type?.name ? `- ` : ''}
-              {product_type?.name}
-            </p>
-          </div>
+      <div className="grid w-full grid-cols-1 items-start gap-4 md:grid-cols-12">
+        <div className="md:col-span-4">
+          <h3 className="text-lg font-bold">{name}</h3>
+          <p className="text-sm text-muted-foreground">
+            {maker?.name ? `${maker.name} (${maker.origin}) - ` : ''}{product_type?.name}
+          </p>
           {product.product_type_id === 1 ? (
-            <div className="mt-2 space-y-1 md:max-w-70">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground font-normal">Modelo:</span>
-                <span className="font-bold text-sm text-foreground">{device_model?.model_number}</span>
+            <div className="mt-2 flex flex-col gap-1 text-sm text-muted-foreground">
+              <div className="flex items-center justify-between">
+                <span>Modelo:</span>
+                <span>{device_model?.model_number}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground font-normal">SKU:</span>
-                <span className="font-bold text-sm text-foreground">{device_model?.sku}</span>
+              <div className="flex items-center justify-between">
+                <span>SKU:</span>
+                <span>{device_model?.sku}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground font-normal">SIM:</span>
-                <span className="font-bold text-sm text-foreground">{device_model?.sim}</span>
+              <div className="flex items-center justify-between">
+                <span>SIM:</span>
+                <span>{device_model?.sim}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground font-normal">Almacenamiento:</span>
-                <span className="font-bold text-sm text-foreground">{device_model?.storage}</span>
+              <div className="flex items-center justify-between">
+                <span>Almacenamiento:</span>
+                <span>{device_model?.storage}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground font-normal">RAM:</span>
-                <span className="font-bold text-sm text-foreground">{device_model?.ram}</span>
+              <div className="flex items-center justify-between">
+                <span>RAM:</span>
+                <span>{device_model?.ram}</span>
               </div>
             </div>
           ) : (
-            <div className="mt-2 space-y-1 md:max-w-70">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground font-normal">Modelo:</span>
-                <span className="font-bold text-sm text-foreground">{tech_accessory?.model_number}</span>
+            <div className="mt-2 flex flex-col gap-1 text-sm text-muted-foreground">
+              <div className="flex items-center justify-between">
+                <span>Modelo:</span>
+                <span>{tech_accessory?.model_number}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground font-normal">Tamaño:</span>
-                <span className="font-bold text-sm text-foreground">{tech_accessory?.size}</span>
+              <div className="flex items-center justify-between">
+                <span>Tamaño:</span>
+                <span>{tech_accessory?.size}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground font-normal">Descripción:</span>
-                <span className="font-bold text-sm text-foreground">{tech_accessory?.description}</span>
+              <div className="flex items-center justify-between">
+                <span>Descripción:</span>
+                <span>{tech_accessory?.description}</span>
               </div>
             </div>
           )}
         </div>
 
-        <div className="md:col-span-3 flex flex-col justify-between">
-          <div>
-            <Label className="text-sm font-normal text-muted-foreground">Categorias:</Label>
-            <div className="flex flex-wrap gap-1 mt-1">
-              {(categories || []).map((category) => (
-                <span
-                  key={category.id}
-                  className="flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold"
-                >
-                  {category.name}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div>
-            <Label className="text-sm font-normal text-muted-foreground mt-3 block">Colores:</Label>
-            <div className="flex flex-wrap gap-1 mt-1">
-              {(colors || []).map((color) => (
-                <span
-                  key={color.id}
-                  className="flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold"
-                  style={{
-                    backgroundColor: color.hex_code
-                      ? `${color.hex_code}20`
-                      : 'transparent',
-                  }}
-                >
-                  <span
-                    className="h-3 w-3 rounded-full border"
-                    style={{ backgroundColor: color.hex_code }}
-                  ></span>
-                  {color.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="md:col-span-3 flex flex-col justify-between">
-          <Label className="text-sm font-normal text-muted-foreground">Precios:</Label>
-          <div className="flex flex-col gap-2 mt-1 md:min-w-50 md:max-w-100">
-            {(prices || []).map((price) => (
-              <div
-                key={price.price_type_id}
-                className="flex items-baseline justify-between gap-2"
+        <div className="md:col-span-2">
+          <Label>Categorias:</Label>
+          <div className="flex flex-wrap gap-1">
+            {(categories || []).map((category) => (
+              <span
+                key={category.id}
+                className="flex items-center gap-1 rounded-full border px-2 py-1 text-sm"
               >
-                <span className="text-sm text-muted-foreground font-normal">
-                  {price.price_type.name}:
-                </span>
-                <div className="flex items-baseline">
-                  <span className="text-md text-right font-bold tabular-nums text-foreground">
-                    {new Intl.NumberFormat('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).format(price.value)}
-                  </span>
-                  <span className="w-10 pl-1 text-left text-sm font-bold text-foreground">
-                    {price.currency.symbol}
-                  </span>
-                </div>
-              </div>
+                {category.name}
+              </span>
+            ))}
+          </div>
+          <br />
+          <Label>Colores:</Label>
+          <div className="flex flex-wrap gap-1">
+            {(colors || []).map((color) => (
+              <span
+                key={color.id}
+                className="flex items-center gap-1 rounded-full border px-2 py-1 text-sm"
+                style={{
+                  backgroundColor: color.hex_code
+                    ? `${color.hex_code}20`
+                    : 'transparent',
+                }}
+              >
+                <span
+                  className="h-3 w-3 rounded-full border"
+                  style={{ backgroundColor: color.hex_code }}
+                ></span>
+                {color.name}
+              </span>
             ))}
           </div>
         </div>
 
-        <div className="md:col-span-1 flex items-end justify-end">
+        <div className="md:col-span-4">
+          {(prices || []).map((price) => (
+            <div
+              key={price.price_type_id}
+              className="flex items-baseline justify-between gap-2"
+            >
+              <span className="text-sm text-muted-foreground">
+                {price.price_type.name}
+              </span>
+              <div className="flex items-baseline">
+                <span className="text-md text-right font-semibold tabular-nums">
+                  {new Intl.NumberFormat('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }).format(price.value)}
+                </span>
+                <span className="w-10 pl-1 text-left text-sm text-muted-foreground">
+                  {price.currency.symbol}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-end md:col-span-2 md:flex-col">
           <Button variant="outline" onClick={onEdit}>
             Editar
           </Button>

@@ -14,9 +14,6 @@ class Product extends Model
         'maker_id',
     ];
 
-    protected $with = ['productType'];
-    protected $appends = ['primary_image_url'];
-
     public function deviceModel()
     {
         return $this->hasOne(DeviceModel::class);
@@ -51,19 +48,6 @@ class Product extends Model
     public function images()
     {
         return $this->belongsToMany(Image::class, 'image_product');
-    }
-
-    public function getPrimaryImageUrlAttribute(): string
-    {
-        if ($this->images->isNotEmpty()) {
-            return $this->images->first()->url;
-        }
-
-        if ($this->productType && $this->productType->id === 2) {
-            return asset('placeholders/accessory.webp');
-        }
-
-        return asset('placeholders/phone.webp');
     }
     
 

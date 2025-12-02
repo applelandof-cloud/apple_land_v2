@@ -156,35 +156,15 @@ return [
     'url'                    => 'El campo :attribute debe ser una URL válida.',
     'uuid'                   => 'El campo :attribute debe ser un UUID válido.',
     'attributes'             => [
-        'address'                   => 'dirección',
-        'current_password'          => 'password actual',
-        'device_model.model_number' => 'modelo',
-        'entry_date'                => 'Fecha de ingreso',
-        'expiration_date'           => 'Fecha de expiración',
-        'hex_code'                  => 'hex_code',
-        'identification'            => 'identificación',
-        'image'                     => 'imagen',
-        'last_name'                 => 'apellido',
-        'name'                      => 'nombre',
-        'phone_number'              => 'número de teléfono',
-    ],
-    'custom'                 => [
-        'prices' => [
-            '*' => [
-                'currency_id'   => [
-                    'exists'   => 'La moneda seleccionada no es válida.',
-                    'required' => 'La moneda es obligatoria.',
-                ],
-                'price_type_id' => [
-                    'exists'   => 'El tipo de precio seleccionado no es válido.',
-                    'required' => 'El tipo de precio es obligatorio.',
-                ],
-                'value'         => [
-                    'min'      => 'El valor del precio debe ser al menos :min.',
-                    'numeric'  => 'El valor del precio debe ser un número válido.',
-                    'required' => 'El valor del precio es obligatorio.',
-                ],
-            ],
-        ],
+        'address'          => 'dirección',
+        'current_password' => 'password actual',
+        'entry_date'       => 'Fecha de ingreso',
+        'expiration_date'  => 'Fecha de expiración',
+        'hex_code'         => 'hex_code',
+        'identification'   => 'identificación',
+        'image'            => 'imagen',
+        'last_name'        => 'apellido',
+        'name'             => 'nombre',
+        'phone_number'     => 'número de teléfono',
     ],
 ];

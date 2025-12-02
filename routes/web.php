@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-
+use Laravel\Fortify\Fortify;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [

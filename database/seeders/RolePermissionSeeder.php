@@ -25,7 +25,6 @@ class RolePermissionSeeder extends Seeder
                 'editar_sucursales',
                 'eliminar_sucursales',
                 'ver_productos',
-                'reset_password'
             ],
             'admin' => [
                 'ver_productos',

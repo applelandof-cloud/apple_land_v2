@@ -40,18 +40,8 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
-        @env('local')
-            @viteReactRefresh
-            @vite(['resources/js/app.tsx'])
-        @else
-            @php
-                $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
-            @endphp
-
-            <link rel="stylesheet" href="{{ asset('build/' . $manifest['resources/js/app.tsx']['css'][0]) }}">
-            <script type="module" src="{{ asset('build/' . $manifest['resources/js/app.tsx']['file']) }}"></script>
-        @endenv
-
+        @viteReactRefresh
+        @vite(['resources/js/app.tsx'])
         @inertiaHead
     </head>
     <body class="font-sans antialiased">

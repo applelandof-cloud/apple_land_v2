@@ -19,7 +19,6 @@ interface StaffListProps {
     handleRoleChange: (roleId: string) => void;
     handlePlaceChange: (placeId: string) => void;
     updateErrors: Record<string, string[]>;
-    setErrors: React.Dispatch<React.SetStateAction<Record<string, string[]>>>; // Corrected type
 }
 
 export default function StaffList({
@@ -37,7 +36,6 @@ export default function StaffList({
     handleRoleChange,
     handlePlaceChange,
     updateErrors,
-    setErrors, // Destructure the new prop
 }: StaffListProps) {
     const [isPlaceManagerModalOpen, setIsPlaceManagerModalOpen] =
         useState(false);
@@ -94,7 +92,6 @@ export default function StaffList({
                     setIsPlaceManagerModalOpen={setIsPlaceManagerModalOpen}
                     handleChangePasswordClick={handleChangePasswordClick}
                     errors={updateErrors}
-                    setErrors={setErrors} // Add this line
                 />
             ))}
         </>

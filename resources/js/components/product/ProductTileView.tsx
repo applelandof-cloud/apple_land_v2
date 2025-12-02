@@ -30,7 +30,7 @@ export function ProductTileView({
   onSelect,
   isSelected,
 }: ProductTileViewProps) {
-  const { id, name, prices, categories, colors, maker, product_type } = product;
+  const { id, name, prices, categories, colors, maker, images, product_type } = product;
 
   return (
     <div
@@ -52,7 +52,7 @@ export function ProductTileView({
         </div>
       )}
       <img
-        src={product.primary_image_url}
+        src={images?.[0]?.url || 'https://via.placeholder.com/300'}
         alt={name}
         className="h-48 w-full rounded-t-lg object-cover"
       />

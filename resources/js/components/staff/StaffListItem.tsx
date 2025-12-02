@@ -21,7 +21,6 @@ interface StaffListItemProps {
     setIsPlaceManagerModalOpen: (isOpen: boolean) => void;
     handleChangePasswordClick: (userId: number) => void;
     errors: Record<string, string[]>;
-    setErrors: React.Dispatch<React.SetStateAction<Record<string, string[]>>>; // Corrected type
 }
 
 export default function StaffListItem({
@@ -41,7 +40,6 @@ export default function StaffListItem({
     setIsPlaceManagerModalOpen,
     handleChangePasswordClick,
     errors,
-    setErrors, // Destructure the new prop
 }: StaffListItemProps) {
     const isEditing = editingUserId === user.id;
     return (
@@ -71,7 +69,6 @@ export default function StaffListItem({
                     setIsPlaceManagerModalOpen={setIsPlaceManagerModalOpen}
                     handleChangePasswordClick={handleChangePasswordClick}
                     errors={errors}
-                    setErrors={setErrors}
                 />
             ) : (
                 <div className="ml-4 grid flex-1 grid-cols-2 items-center gap-4 md:grid-cols-9">

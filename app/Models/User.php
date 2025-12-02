@@ -28,7 +28,6 @@ class User extends Authenticatable
         'identification',
         'phone_number',
         'is_active',
-        'active_role'
     ];
 
     /**
@@ -39,15 +38,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-    ];
-
-    /**
-     * The attributes that should be appended to the model's array form.
-     *
-     * @var array<string>
-     */
-    protected $appends = [
-        'permissions',
     ];
 
     /**
@@ -82,12 +72,5 @@ class User extends Authenticatable
               'place_user',
     'user_id',
     'place_id')->withTimestamps();
-    }
-
-    public function getPermissionsAttribute()
-    {
-        return $this->roles->flatMap(function ($role) {
-            return $role->permissions;
-        })->pluck('name')->unique()->values()->all();
     }
 }
