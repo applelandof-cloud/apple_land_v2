@@ -15,7 +15,6 @@ class UserRoleSeeder extends Seeder
     {
         $userRolesMap = [
             'sonia' => ['owner', 'admin', 'seller'],
-            'ivo' => ['seller'],
             'ela' => ['seller'],
         ];
 
